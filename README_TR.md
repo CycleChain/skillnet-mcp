@@ -165,6 +165,7 @@ Bu MCP sunucusu yapay zeka ajanları (Cursor, Windsurf, Claude Desktop vb.) tara
 ## Kullanılabilir Araçlar
 
 Yapılandırmayı tamamladıktan sonra ajanınız MCP protokolü ile aşağıdaki araçları kullanmaya başlayabilir:
+- **`get_mcp_best_practices`**: Tüm dillerde MCP Sunucusu ve AI Agent Skills geliştirmek için resmi en iyi kullanım pratiklerini ve kodlama standartlarını getirin.
 - **`search_skills`**: Anahtar kelime veya anlamsal eşleşmeyle 200.000'den fazla yeteneği arayın.
 - **`download_skill`**: Uzaktaki yetenekleri cihazınıza doğrudan indirin.
 - **`create_skill`**: Github depolarını, PDF'leri ya da istemleri (prompts) yerel yetenek paketlerine çevirin.

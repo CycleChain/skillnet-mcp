@@ -8,8 +8,12 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { execFile } from "child_process";
 import { promisify } from "util";
+import { readFile } from "fs/promises";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
 const execFileAsync = promisify(execFile);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const server = new Server(
   {
@@ -27,6 +31,15 @@ const server = new Server(
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
+      {
+        name: "get_mcp_best_practices",
+        description: "Retrieve official best practices, coding rules, and examples for MCP (Model Context Protocol) Server and AI Agent Skill development natively across all languages.",
+        inputSchema: {
+          type: "object",
+          properties: {},
+          required: [],
+        },
+      },
       {
         name: "search_skills",
         description: "Search for skills via keyword or semantic match in SkillNet.",
@@ -143,6 +156,15 @@ export function buildCommand(name, args) {
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     const { name, arguments: args } = request.params;
+
+    if (name === "get_mcp_best_practices") {
+      const skillPath = join(__dirname, "skills", "mcp-best-practices", "SKILL.md");
+      const content = await readFile(skillPath, "utf-8");
+      return {
+        content: [{ type: "text", text: content }],
+      };
+    }
+
     const commandArgs = buildCommand(name, args);
 
     const { stdout, stderr } = await execFileAsync("skillnet", commandArgs);

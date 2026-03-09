@@ -23,3 +23,7 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+
+# for test
+skills

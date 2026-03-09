@@ -143,6 +143,7 @@ Since this MCP server is optimized to be used by AI Agents (like Cursor, Windsur
 ## Available Tools
 
 Once configured, your agent gets access to the following underlying actions via the MCP protocol:
+- **`get_mcp_best_practices`**: Retrieve official best practices and coding standards for MCP Server and AI Agent Skill development globally.
 - **`search_skills`**: Search across 200,000+ skills by keywords or semantics.
 - **`download_skill`**: Install remote skill code directly to your local file system.
 - **`create_skill`**: Turn repos, PDFs, and prompts into structured skill packages locally.
