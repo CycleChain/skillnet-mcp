@@ -155,14 +155,10 @@ Ajan yeteneklerini yapısal olarak birbirine bağlamanızı sağlayan güçlü, 
 ```
 
 ### 7. Docker ile Kullanım (Opsiyonel)
-En sağlam ve bağımlılıksız (dependency-free) deneyim için SkillNet MCP'yi yerel olarak Docker imajı oluşturarak çalıştırabilirsiniz.
+En sağlam ve bağımlılıksız (dependency-free) deneyim için SkillNet MCP'yi Docker üzerinden çalıştırabilirsiniz. Hazır imajı kullanabilir veya kendiniz derleyebilirsiniz.
 
-Önce proje dizininde Docker imajını derleyin:
-```bash
-docker build -t skillnet-mcp-local .
-```
-
-Ardından MCP istemcinizi (Cursor/Claude vb.) bu yerel imajı kullanacak şekilde yapılandırın:
+**Seçenek A: Hazır İmajı Kullanma (Önerilen)**
+MCP istemcinizi doğrudan [Docker Hub](https://hub.docker.com/r/fmdogancan/skillnet-mcp) üzerindeki resmi imajı kullanacak şekilde yapılandırın:
 ```json
 {
   "mcpServers": {
@@ -175,12 +171,19 @@ Ardından MCP istemcinizi (Cursor/Claude vb.) bu yerel imajı kullanacak şekild
         "-e", "API_KEY=api_anahtariniz_burada",
         "-e", "GITHUB_TOKEN=github_tokeniniz_burada",
         "-v", "skillnet_data:/root/.skillnet",
-        "skillnet-mcp-local"
+        "fmdogancan/skillnet-mcp:latest"
       ]
     }
   }
 }
 ```
+
+**Seçenek B: Yerel Olarak Derleme**
+İmajı kaynak koddan kendiniz oluşturmak isterseniz proje dizininde şu komutu çalıştırın:
+```bash
+docker build -t skillnet-mcp-local .
+```
+*(Ardından yukarıdaki JSON ayarında `fmdogancan/skillnet-mcp:latest` yerine `skillnet-mcp-local` yazın).*
 *Not: `-v` parametresi, indirilen skill'lerin Docker konteyneri silinse bile kaybolmamasını (kalıcı olmasını) sağlar.*
 
 ## IDE Ajanları İçin En İyi Kullanım Pratikleri

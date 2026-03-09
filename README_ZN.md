@@ -155,14 +155,10 @@ Windsurf 使用称为 Cascade 的智能体，具有极强的 MCP 调用能力。
 ```
 
 ### 7. 使用 Docker (可选)
-为了获得最稳定、无依赖冲突的体验，您可以使用项目自带的 Dockerfile 在本地构建并运行 SkillNet MCP：
+为了获得最稳定、无依赖冲突的体验，您可以通过 Docker 运行 SkillNet MCP。您可以直接使用预构建的官方镜像，也可以在本地自行构建。
 
-首先，在项目目录下构建本地镜像：
-```bash
-docker build -t skillnet-mcp-local .
-```
-
-然后，配置您的 MCP 客户端以使用构建好的本地镜像：
+**选项 A: 使用预构建镜像（推荐）**
+直接配置您的 MCP 客户端使用 [Docker Hub](https://hub.docker.com/r/fmdogancan/skillnet-mcp) 上的官方镜像：
 ```json
 {
   "mcpServers": {
@@ -175,12 +171,19 @@ docker build -t skillnet-mcp-local .
         "-e", "API_KEY=在此填写您的_api_key",
         "-e", "GITHUB_TOKEN=在此填写您的_github_token",
         "-v", "skillnet_data:/root/.skillnet",
-        "skillnet-mcp-local"
+        "fmdogancan/skillnet-mcp:latest"
       ]
     }
   }
 }
 ```
+
+**选项 B: 本地构建**
+如果您更喜欢从源码自行构建镜像，请在项目目录下运行：
+```bash
+docker build -t skillnet-mcp-local .
+```
+*（然后，将上述 JSON 配置中的 `fmdogancan/skillnet-mcp:latest` 替换为 `skillnet-mcp-local`）。*
 *注：`-v` 参数可确保即使 Docker 容器被删除，您下载的技能包也能持久保留。*
 
 ## IDE 智能体最佳实践指南

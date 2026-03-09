@@ -133,14 +133,10 @@ The fastest MCP integration tool running directly in your terminal.
 ```
 
 ### 6. Using Docker (Optional)
-For the most robust, dependency-free experience, you can build and run the SkillNet MCP via Docker.
+For the most robust, dependency-free experience, you can run the SkillNet MCP via Docker. You can either use the pre-built official image or build it locally.
 
-First, build the image locally from the project directory:
-```bash
-docker build -t skillnet-mcp-local .
-```
-
-Then, configure your MCP client to use the local image:
+**Option A: Use the Pre-built Image (Recommended)**
+Simply configure your MCP client to use the official image from [Docker Hub](https://hub.docker.com/r/fmdogancan/skillnet-mcp):
 ```json
 {
   "mcpServers": {
@@ -153,12 +149,19 @@ Then, configure your MCP client to use the local image:
         "-e", "API_KEY=your_api_key_here",
         "-e", "GITHUB_TOKEN=your_github_token_here",
         "-v", "skillnet_data:/root/.skillnet",
-        "skillnet-mcp-local"
+        "fmdogancan/skillnet-mcp:latest"
       ]
     }
   }
 }
 ```
+
+**Option B: Build Locally**
+If you prefer to build the image yourself from the source:
+```bash
+docker build -t skillnet-mcp-local .
+```
+*(Then, replace `fmdogancan/skillnet-mcp:latest` with `skillnet-mcp-local` in the JSON config above).*
 *Note: The `-v` parameter ensures that your downloaded skills persist even if the Docker container is removed.*
 
 ## Best Practices for IDE Agents
