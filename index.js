@@ -8,7 +8,8 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { execFile } from "child_process";
 import { promisify } from "util";
-import { readFile, readdir, rm } from "fs/promises";
+import { readFile, readdir, rm, access } from "fs/promises";
+import { constants } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
@@ -40,6 +41,20 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             topic: {
               type: "string",
               description: "The topic, technology, or framework to find a skill for (e.g. 'NodeJS', 'Docker', 'React')",
+            },
+          },
+          required: ["topic"],
+        },
+      },
+      {
+        name: "get_skill_rules",
+        description: "Extracts only the critical rules and system instructions from a skill to save tokens. Use this instead of import_best_skill when you only need the behavioral rules.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            topic: {
+              type: "string",
+              description: "The topic or technology (e.g. 'NodeJS', 'FastAPI')",
             },
           },
           required: ["topic"],
@@ -165,32 +180,100 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     if (name === "import_best_skill") {
       const { topic } = args;
       try {
-        const { stdout: searchOut } = await execFileAsync("skillnet", ["search", topic, "--limit", "1", "--sort-by", "stars"]);
-        const urlMatch = searchOut.match(/https:\/\/github\.com\/([^\s│]+)/);
-        if (!urlMatch) {
-          return { content: [{ type: "text", text: `No skill found for topic: ${topic}.` }] };
-        }
-
-        const skillUrl = urlMatch[0];
         const safeTopic = topic.replace(/[^a-zA-Z0-9]/g, "_");
         const tempDir = join(__dirname, ".temp_skills", safeTopic);
 
-        await execFileAsync("skillnet", ["download", skillUrl, "-d", tempDir]);
-        const files = await readdir(tempDir);
+        let isCached = false;
+        try {
+          await access(tempDir, constants.F_OK);
+          isCached = true;
+        } catch { }
 
-        let contentStr = `Successfully imported skill from ${skillUrl}:\n\n`;
+        let skillUrl = `local cache (.temp_skills/${safeTopic})`;
+
+        if (!isCached) {
+          const { stdout: searchOut } = await execFileAsync("skillnet", ["search", topic, "--limit", "1", "--sort-by", "stars"]);
+          const urlMatch = searchOut.match(/https:\/\/github\.com\/([^\s│]+)/);
+          if (!urlMatch) {
+            return { content: [{ type: "text", text: `No skill found for topic: ${topic}.` }] };
+          }
+          skillUrl = urlMatch[0];
+          await execFileAsync("skillnet", ["download", skillUrl, "-d", tempDir]);
+        }
+
+        const files = await readdir(tempDir);
+        let contentStr = "";
         const mdFiles = files.filter(f => f.toLowerCase().endsWith(".md")).sort((a, b) => a.toLowerCase() === "skill.md" ? -1 : 1);
 
         if (mdFiles.length > 0) {
-          contentStr += await readFile(join(tempDir, mdFiles[0]), "utf-8");
+          contentStr = await readFile(join(tempDir, mdFiles[0]), "utf-8");
         } else {
-          contentStr += "No .md documentation found in this skill.";
+          contentStr = "No .md documentation found in this skill.";
         }
 
-        await rm(tempDir, { recursive: true, force: true });
-        return { content: [{ type: "text", text: contentStr }] };
+        return {
+          content: [
+            { type: "text", text: `Status: Successfully imported ${isCached ? "from local cache" : skillUrl}` },
+            { type: "text", text: contentStr }
+          ]
+        };
       } catch (err) {
         return { isError: true, content: [{ type: "text", text: `Failed to import skill: \n${err.stderr || err.message}` }] };
+      }
+    }
+
+    if (name === "get_skill_rules") {
+      const { topic } = args;
+      try {
+        const safeTopic = topic.replace(/[^a-zA-Z0-9]/g, "_");
+        const tempDir = join(__dirname, ".temp_skills", safeTopic);
+
+        let isCached = false;
+        try {
+          await access(tempDir, constants.F_OK);
+          isCached = true;
+        } catch { }
+
+        if (!isCached) {
+          const { stdout: searchOut } = await execFileAsync("skillnet", ["search", topic, "--limit", "1", "--sort-by", "stars"]);
+          const urlMatch = searchOut.match(/https:\/\/github\.com\/([^\s│]+)/);
+          if (!urlMatch) {
+            return { content: [{ type: "text", text: `No skill found for topic: ${topic}.` }] };
+          }
+          await execFileAsync("skillnet", ["download", urlMatch[0], "-d", tempDir]);
+        }
+
+        const files = await readdir(tempDir);
+        let rulesContent = "";
+
+        const specificRuleFiles = files.filter(f => f.toLowerCase() === "rules.json" || f.toLowerCase() === "prompt.md");
+        if (specificRuleFiles.length > 0) {
+          for (const sf of specificRuleFiles) {
+            rulesContent += `### ${sf}\n` + await readFile(join(tempDir, sf), "utf-8") + "\n\n";
+          }
+        } else {
+          const mdFiles = files.filter(f => f.toLowerCase().endsWith(".md")).sort((a, b) => a.toLowerCase() === "skill.md" ? -1 : 1);
+          if (mdFiles.length > 0) {
+            const fullMd = await readFile(join(tempDir, mdFiles[0]), "utf-8");
+            const rulesMatch = fullMd.match(/#+\s*(?:Kurallar|Rules|Best Practices|Instructions|Talimatlar)([\s\S]*?)(?=\n#+ |\Z)/i);
+            if (rulesMatch) {
+              rulesContent = "Extracted Rules:\n" + rulesMatch[0];
+            } else {
+              rulesContent = fullMd; // Fallback to full doc
+            }
+          } else {
+            rulesContent = "No rules or documentation found.";
+          }
+        }
+
+        return {
+          content: [
+            { type: "text", text: `Status: Rules successfully extracted for ${topic} ${isCached ? "(from cache)" : ""}` },
+            { type: "text", text: rulesContent }
+          ]
+        };
+      } catch (err) {
+        return { isError: true, content: [{ type: "text", text: `Failed to get skill rules: \n${err.stderr || err.message}` }] };
       }
     }
 
