@@ -143,10 +143,20 @@ Since this MCP server is optimized to be used by AI Agents (like Cursor, Windsur
 ## Available Tools
 
 Once configured, your agent gets access to the following underlying actions via the MCP protocol:
-- **`get_mcp_best_practices`**: Retrieve official best practices and coding standards for MCP Server and AI Agent Skill development globally.
+- **`import_best_skill`**: Dynamically searches for the highest-rated skill on a given topic, downloads it, and immediately returns its documentation to your agent's context.
 - **`search_skills`**: Search across 200,000+ skills by keywords or semantics.
 - **`download_skill`**: Install remote skill code directly to your local file system.
 - **`create_skill`**: Turn repos, PDFs, and prompts into structured skill packages locally.
 - **`evaluate_skill`**: Get a 5-D report (Safety, Completeness, etc.) of any skill.
 - **`analyze_skills`**: Trace dependencies and build semantic relationship maps over a group of skills.
+
+### Example Usage Prompts
+Here are some autonomous prompt examples you can give to your AI Agent:
+- **`import_best_skill`**: *"I'm going to write a project with React Native. Find the most popular React Native skill on Skillnet, import it into your memory, and then generate the app."*
+- **`search_skills`**: *"What skills are available on Skillnet regarding database optimization? List the top 3 highest-rated ones."*
+- **`download_skill`**: *"Download the skill from this GitHub link, read its SKILL.md, and summarize its architecture to me."*
+- **`create_skill`**: *"Analyze the code in our `src/` directory and create a standardized skill package from it that our team can reuse."*
+- **`evaluate_skill`**: *"Generate a 5-dimensional evaluation report for this downloaded skill regarding its safety and completeness, and warn me if there are vulnerabilities."*
+- **`analyze_skills`**: *"Map the dependency relationships between all our downloaded skills and show me if any overlap or conflict."*
+
 Enjoy building your personal AI agent skill graph!

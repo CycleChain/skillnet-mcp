@@ -8,7 +8,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { execFile } from "child_process";
 import { promisify } from "util";
-import { readFile } from "fs/promises";
+import { readFile, readdir, rm } from "fs/promises";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
@@ -32,12 +32,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
       {
-        name: "get_mcp_best_practices",
-        description: "Retrieve official best practices, coding rules, and examples for MCP (Model Context Protocol) Server and AI Agent Skill development natively across all languages.",
+        name: "import_best_skill",
+        description: "Searches SkillNet for the highest-rated skill on a given topic, downloads it temporarily, and returns its full content (e.g., SKILL.md) so you can immediately use its context and rules.",
         inputSchema: {
           type: "object",
-          properties: {},
-          required: [],
+          properties: {
+            topic: {
+              type: "string",
+              description: "The topic, technology, or framework to find a skill for (e.g. 'NodeJS', 'Docker', 'React')",
+            },
+          },
+          required: ["topic"],
         },
       },
       {
@@ -157,12 +162,36 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     const { name, arguments: args } = request.params;
 
-    if (name === "get_mcp_best_practices") {
-      const skillPath = join(__dirname, "skills", "mcp-best-practices", "SKILL.md");
-      const content = await readFile(skillPath, "utf-8");
-      return {
-        content: [{ type: "text", text: content }],
-      };
+    if (name === "import_best_skill") {
+      const { topic } = args;
+      try {
+        const { stdout: searchOut } = await execFileAsync("skillnet", ["search", topic, "--limit", "1", "--sort-by", "stars"]);
+        const urlMatch = searchOut.match(/https:\/\/github\.com\/([^\s│]+)/);
+        if (!urlMatch) {
+          return { content: [{ type: "text", text: `No skill found for topic: ${topic}.` }] };
+        }
+
+        const skillUrl = urlMatch[0];
+        const safeTopic = topic.replace(/[^a-zA-Z0-9]/g, "_");
+        const tempDir = join(__dirname, ".temp_skills", safeTopic);
+
+        await execFileAsync("skillnet", ["download", skillUrl, "-d", tempDir]);
+        const files = await readdir(tempDir);
+
+        let contentStr = `Successfully imported skill from ${skillUrl}:\n\n`;
+        const mdFiles = files.filter(f => f.toLowerCase().endsWith(".md")).sort((a, b) => a.toLowerCase() === "skill.md" ? -1 : 1);
+
+        if (mdFiles.length > 0) {
+          contentStr += await readFile(join(tempDir, mdFiles[0]), "utf-8");
+        } else {
+          contentStr += "No .md documentation found in this skill.";
+        }
+
+        await rm(tempDir, { recursive: true, force: true });
+        return { content: [{ type: "text", text: contentStr }] };
+      } catch (err) {
+        return { isError: true, content: [{ type: "text", text: `Failed to import skill: \n${err.stderr || err.message}` }] };
+      }
     }
 
     const commandArgs = buildCommand(name, args);

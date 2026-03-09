@@ -165,10 +165,20 @@ Bu MCP sunucusu yapay zeka ajanları (Cursor, Windsurf, Claude Desktop vb.) tara
 ## Kullanılabilir Araçlar
 
 Yapılandırmayı tamamladıktan sonra ajanınız MCP protokolü ile aşağıdaki araçları kullanmaya başlayabilir:
-- **`get_mcp_best_practices`**: Tüm dillerde MCP Sunucusu ve AI Agent Skills geliştirmek için resmi en iyi kullanım pratiklerini ve kodlama standartlarını getirin.
+- **`import_best_skill`**: Belirli bir konu (geliştirme dilleri, teknolojiler vb.) için en yüksek yıldızlı skillnet yeteneğini anlık olarak arar, indirir ve en iyi pratikleri ajanınızın hafızasına hemen yükler.
 - **`search_skills`**: Anahtar kelime veya anlamsal eşleşmeyle 200.000'den fazla yeteneği arayın.
 - **`download_skill`**: Uzaktaki yetenekleri cihazınıza doğrudan indirin.
 - **`create_skill`**: Github depolarını, PDF'leri ya da istemleri (prompts) yerel yetenek paketlerine çevirin.
 - **`evaluate_skill`**: Herhangi bir yetenek hakkında 5 Boyutlu Değerlendirme raporu alın (Güvenlik, Bütünlük, vb.).
 - **`analyze_skills`**: Birden çok yetenek arasındaki bağımlılıkları analiz edip ilişkilerini haritalayın.
+
+### Örnek Kullanım Komutları (Prompt Örnekleri)
+Ajanınıza verebileceğiniz bazı otonom komut örnekleri:
+- **`import_best_skill`**: *"React Native ile bir proje yazacağım, Skillnet'teki en popüler React Native yeteneğini bul ve hafızana al, sonra da projeyi oluştur."*
+- **`search_skills`**: *"Veritabanı optimizasyonu ile ilgili Skillnet üzerinde hangi yetenekler var? En yüksek yıldızlı 3 tanesini listele."*
+- **`download_skill`**: *"Şu GitHub linkindeki yeteneği indir ve içerisindeki SKILL.md dosyasını okuyarak bana mimariyi özetle."*
+- **`create_skill`**: *"Mevcut projemizin `src/` klasöründeki kodları analiz et ve bundan takımın kullanabileceği standart bir yetenek (skill) paketi oluştur."*
+- **`evaluate_skill`**: *"İndirdiğimiz bu yeteneğin güvenlik ve bütünlük açısından 5 boyutlu değerlendirme raporunu çıkar, zayıf yönleri varsa beni uyar."*
+- **`analyze_skills`**: *"İndirdiğimiz tüm yetenekler arasındaki bağımlılık ilişkilerini haritala ve hangi yeteneklerin birbiriyle çakıştığını göster."*
+
 Kendi özel yapay zeka ajan yetenek (skill) havuzunuzu kurmanın tadını çıkarın!
