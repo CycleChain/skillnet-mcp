@@ -3,6 +3,14 @@
 * [🇬🇧 English](README.md)
 * [🇹🇷 Türkçe (Turkish)](README_TR.md)
 
+> **Empowering AI Agents with 200k+ Specialized Skills**
+> 
+> SkillNet MCP 是在 AI 智能体（Claude、Cursor、Windsurf）与全球最全面的智能体技能库 SkillNet 之间建立的高性能桥梁。
+> 
+> 普通的智能体只会写代码；而配备了 SkillNet MCP 的智能体则能在超过 200,000 个专业领域（Architecture, DevOps, AIGC, Security）中，了解“最佳实践”规则来编写代码。
+
+---
+
 欢迎使用 **SkillNet MCP 服务器**！本服务器充当了模型上下文协议（MCP）和 [SkillNet](https://github.com/zjunlp/SkillNet) 之间的桥梁。SkillNet 是一款用于 AI 智能体技能的开放基础设施。
 
 通过安装此 MCP 服务器，您的 AI 智能体将可以直接使用您最喜爱的开发环境的 SkillNet CLI，从而无缝地进行技能搜索、下载、创建、评估和分析。

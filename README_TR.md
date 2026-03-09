@@ -3,6 +3,14 @@
 * [🇬🇧 English](README.md)
 * [🇨🇳 中文 (Chinese)](README_ZN.md)
 
+> **Empowering AI Agents with 200k+ Specialized Skills**
+> 
+> SkillNet MCP, yapay zeka ajanları (Claude, Cursor, Windsurf) ile dünyanın en kapsamlı ajan yetenek kütüphanesi olan SkillNet arasında kurulan yüksek performanslı bir köprüdür.
+> 
+> Sıradan bir ajan sadece kod yazar; SkillNet MCP ile donatılmış bir ajan ise 200.000'den fazla uzmanlık alanında (Architecture, DevOps, AIGC, Security) "best practice" kurallarını bilerek kod yazar.
+
+---
+
 **SkillNet MCP Sunucusu**'na hoş geldiniz! Bu sunucu, yapay zeka ajan yetenekleri (skills) için açık bir altyapı olan [SkillNet](https://github.com/zjunlp/SkillNet) ile Model Context Protocol (MCP) arasında bir köprü görevi görür.
 
 Bu MCP sunucusunu yükleyerek, AI ajanınız favori editörünüz üzerinden doğrudan SkillNet CLI kullanarak ajan yeteneklerini arayabilir, indirebilir, oluşturabilir, değerlendirebilir ve analiz edebilir.

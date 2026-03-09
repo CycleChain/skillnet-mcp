@@ -3,6 +3,14 @@
 * [🇹🇷 Türkçe (Turkish)](README_TR.md)
 * [🇨🇳 中文 (Chinese)](README_ZN.md)
 
+> **Empowering AI Agents with 200k+ Specialized Skills**
+> 
+> SkillNet MCP is a high-performance bridge established between AI agents (Claude, Cursor, Windsurf) and SkillNet, the world's most comprehensive agent skill library.
+> 
+> An ordinary agent just writes code; an agent equipped with SkillNet MCP writes code knowing the "best practice" rules in more than 200,000 domains of expertise (Architecture, DevOps, AIGC, Security).
+
+---
+
 Welcome to the **SkillNet MCP Server**! This server bridges the Model Context Protocol (MCP) with [SkillNet](https://github.com/zjunlp/SkillNet), the open infrastructure for AI agent skills.
 
 By installing this MCP server, your AI Agent will be able to seamlessly search, download, create, evaluate, and analyze agent skills using the SkillNet CLI directly from your favorite editor or environment.
