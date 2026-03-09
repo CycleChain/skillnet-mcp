@@ -1,0 +1,41 @@
+{
+  "name": "skillnet-mcp",
+  "version": "1.0.0",
+  "description": "Model Context Protocol (MCP) server wrapping the official SkillNet AI CLI for integrating AI Agent Skills seamlessly.",
+  "main": "index.js",
+  "bin": {
+    "skillnet-mcp": "./index.js"
+  },
+  "scripts": {
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --forceExit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CycleChain/skillnet-mcp.git"
+  },
+  "keywords": [
+    "mcp",
+    "skillnet",
+    "ai",
+    "agents",
+    "model-context-protocol"
+  ],
+  "author": {
+    "name": "Fatih Mert Doğancan",
+    "email": "fatih.dogancan@cyclechain.io",
+    "url": "https://cyclechain.io"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CycleChain/skillnet-mcp/issues"
+  },
+  "homepage": "https://github.com/CycleChain/skillnet-mcp#readme",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1"
+  },
+  "devDependencies": {
+    "@jest/globals": "^30.2.0",
+    "jest": "^30.2.0"
+  },
+  "type": "module"
+}
