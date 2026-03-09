@@ -154,6 +154,35 @@ Ajan yeteneklerini yapısal olarak birbirine bağlamanızı sağlayan güçlü, 
 }
 ```
 
+### 7. Docker ile Kullanım (Opsiyonel)
+En sağlam ve bağımlılıksız (dependency-free) deneyim için SkillNet MCP'yi yerel olarak Docker imajı oluşturarak çalıştırabilirsiniz.
+
+Önce proje dizininde Docker imajını derleyin:
+```bash
+docker build -t skillnet-mcp-local .
+```
+
+Ardından MCP istemcinizi (Cursor/Claude vb.) bu yerel imajı kullanacak şekilde yapılandırın:
+```json
+{
+  "mcpServers": {
+    "skillnet-docker": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e", "API_KEY=api_anahtariniz_burada",
+        "-e", "GITHUB_TOKEN=github_tokeniniz_burada",
+        "-v", "skillnet_data:/root/.skillnet",
+        "skillnet-mcp-local"
+      ]
+    }
+  }
+}
+```
+*Not: `-v` parametresi, indirilen skill'lerin Docker konteyneri silinse bile kaybolmamasını (kalıcı olmasını) sağlar.*
+
 ## IDE Ajanları İçin En İyi Kullanım Pratikleri
 
 Bu MCP sunucusu yapay zeka ajanları (Cursor, Windsurf, Claude Desktop vb.) tarafından kullanılmak üzere optimize edildiğinden, ajanlara talimat verirken şu pratikleri uygulayabilirsiniz:
@@ -167,6 +196,7 @@ Bu MCP sunucusu yapay zeka ajanları (Cursor, Windsurf, Claude Desktop vb.) tara
 ## Kullanılabilir Araçlar
 
 Yapılandırmayı tamamladıktan sonra ajanınız MCP protokolü ile aşağıdaki araçları kullanmaya başlayabilir:
+- **`health_check`**: Kendi kendini teşhis aracı. Sistemde Python, Node ve SkillNet CLI'ın kurulu olup olmadığını kontrol eder. Hata durumunda ajanlar bunu otomatik çalıştırır.
 - **`import_best_skill`**: Belirli bir konu (geliştirme dilleri, teknolojiler vb.) için en yüksek yıldızlı skillnet yeteneğini anlık olarak arar, indirir ve en iyi pratikleri ajanınızın hafızasına hemen yükler.
 - **`get_skill_rules`**: LLM token dostu hafif bir yetenek aracıdır. Tüm belgesini vermek yerine, sadece o yetenek paketindeki kritik kuralları (rules.json, kurallar bölümü vb.) getirerek ajanın bağlamında tasarruf sağlar.
 - **`search_skills`**: Anahtar kelime veya anlamsal eşleşmeyle 200.000'den fazla yeteneği arayın.

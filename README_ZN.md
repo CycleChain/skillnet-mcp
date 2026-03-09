@@ -154,6 +154,35 @@ Windsurf 使用称为 Cascade 的智能体，具有极强的 MCP 调用能力。
 }
 ```
 
+### 7. 使用 Docker (可选)
+为了获得最稳定、无依赖冲突的体验，您可以使用项目自带的 Dockerfile 在本地构建并运行 SkillNet MCP：
+
+首先，在项目目录下构建本地镜像：
+```bash
+docker build -t skillnet-mcp-local .
+```
+
+然后，配置您的 MCP 客户端以使用构建好的本地镜像：
+```json
+{
+  "mcpServers": {
+    "skillnet-docker": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e", "API_KEY=在此填写您的_api_key",
+        "-e", "GITHUB_TOKEN=在此填写您的_github_token",
+        "-v", "skillnet_data:/root/.skillnet",
+        "skillnet-mcp-local"
+      ]
+    }
+  }
+}
+```
+*注：`-v` 参数可确保即使 Docker 容器被删除，您下载的技能包也能持久保留。*
+
 ## IDE 智能体最佳实践指南
 
 既然此 MCP 服务器是为了 AI 智能体（如 Cursor、Windsurf 或 Claude）专属优化设计的，这里提供一些如何更高效地对您的智能体发出指令的小提示：
@@ -167,6 +196,7 @@ Windsurf 使用称为 Cascade 的智能体，具有极强的 MCP 调用能力。
 ## 可用的工具
 
 配置完成后，您的智能体将可以通过 MCP 协议执行以下核心操作：
+- **`health_check`**: 系统自检工具。检查 Python、Node 和 SkillNet CLI 是否正确安装。遇到错误时智能体会自动运行此工具排查依赖。
 - **`import_best_skill`**: 动态搜索特定主题最高评分的技能，立即下载并将其全套文档载入到智能体的上下文中，实现技能的热更新与即插即用。
 - **`get_skill_rules`**: `import_best_skill` 的 Token 友好型替代方案。仅提取技能中的核心规则和系统指令（例如 `rules.json` 或重点规则部分），避免加载完整文档浪费 Token。
 - **`search_skills`**: 通过关键字或语义匹配在全球超 200,000 项技能库中进行搜索。

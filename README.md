@@ -132,6 +132,35 @@ The fastest MCP integration tool running directly in your terminal.
 }
 ```
 
+### 6. Using Docker (Optional)
+For the most robust, dependency-free experience, you can build and run the SkillNet MCP via Docker.
+
+First, build the image locally from the project directory:
+```bash
+docker build -t skillnet-mcp-local .
+```
+
+Then, configure your MCP client to use the local image:
+```json
+{
+  "mcpServers": {
+    "skillnet-docker": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e", "API_KEY=your_api_key_here",
+        "-e", "GITHUB_TOKEN=your_github_token_here",
+        "-v", "skillnet_data:/root/.skillnet",
+        "skillnet-mcp-local"
+      ]
+    }
+  }
+}
+```
+*Note: The `-v` parameter ensures that your downloaded skills persist even if the Docker container is removed.*
+
 ## Best Practices for IDE Agents
 
 Since this MCP server is optimized to be used by AI Agents (like Cursor, Windsurf, or Claude), here are some tips on how to interact with the agent as a user:
@@ -145,6 +174,7 @@ Since this MCP server is optimized to be used by AI Agents (like Cursor, Windsur
 ## Available Tools
 
 Once configured, your agent gets access to the following underlying actions via the MCP protocol:
+- **`health_check`**: Self-diagnostic tool. Checks if Python, Node, and SkillNet CLI are properly installed. Agents will autonomously run this if tools fail.
 - **`import_best_skill`**: Dynamically searches for the highest-rated skill on a given topic, downloads it, and immediately returns its entire documentation to your agent's context.
 - **`get_skill_rules`**: A token-friendly alternative to `import_best_skill`. Extracts only the core rules and system instructions (e.g., `rules.json` or `PROMPT.md`) without loading the full documentation.
 - **`search_skills`**: Search across 200,000+ skills by keywords or semantics.

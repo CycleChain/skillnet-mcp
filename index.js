@@ -8,7 +8,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { execFile } from "child_process";
 import { promisify } from "util";
-import { readFile, readdir, rm, access } from "fs/promises";
+import { readFile, readdir, rm, access, stat } from "fs/promises";
 import { constants } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
@@ -32,6 +32,14 @@ const server = new Server(
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
+      {
+        name: "health_check",
+        description: "Checks if the system dependencies (Python, Node, and skillnet-ai CLI) are correctly installed and accessible. Run this if tools are failing.",
+        inputSchema: {
+          type: "object",
+          properties: {}
+        }
+      },
       {
         name: "import_best_skill",
         description: "Searches SkillNet for the highest-rated skill on a given topic, downloads it temporarily, and returns its full content (e.g., SKILL.md) so you can immediately use its context and rules.",
@@ -177,6 +185,28 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     const { name, arguments: args } = request.params;
 
+    if (name === "health_check") {
+      try {
+        const { stdout: pyVersion } = await execFileAsync("python3", ["--version"]);
+        const { stdout: snVersion } = await execFileAsync("skillnet", ["--help"]);
+
+        return {
+          content: [{
+            type: "text",
+            text: `✅ System Healthy:\n- Python: ${pyVersion.trim()}\n- SkillNet CLI: ${snVersion.trim()}\n- Node.js: ${process.version}`
+          }]
+        };
+      } catch (err) {
+        return {
+          isError: true,
+          content: [{
+            type: "text",
+            text: `❌ System Unhealthy: SkillNet CLI or Python 3 not found.\nDetails: ${err.message}`
+          }]
+        };
+      }
+    }
+
     if (name === "import_best_skill") {
       const { topic } = args;
       try {
@@ -218,7 +248,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ]
         };
       } catch (err) {
-        return { isError: true, content: [{ type: "text", text: `Failed to import skill: \n${err.stderr || err.message}` }] };
+        return { isError: true, content: [{ type: "text", text: `Failed to import skill: \n${err.stderr || err.message}\nIf you think this is a system error, please run the 'health_check' tool to diagnose dependencies.` }] };
       }
     }
 
@@ -227,11 +257,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       try {
         const safeTopic = topic.replace(/[^a-zA-Z0-9]/g, "_");
         const tempDir = join(__dirname, ".temp_skills", safeTopic);
+        const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 Hours
 
         let isCached = false;
         try {
-          await access(tempDir, constants.F_OK);
-          isCached = true;
+          const stats = await stat(tempDir);
+          if (Date.now() - stats.mtimeMs < CACHE_TTL) {
+            isCached = true;
+          } else {
+            await rm(tempDir, { recursive: true, force: true });
+          }
         } catch { }
 
         if (!isCached) {
@@ -246,34 +281,51 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const files = await readdir(tempDir);
         let rulesContent = "";
 
-        const specificRuleFiles = files.filter(f => f.toLowerCase() === "rules.json" || f.toLowerCase() === "prompt.md");
-        if (specificRuleFiles.length > 0) {
-          for (const sf of specificRuleFiles) {
-            rulesContent += `### ${sf}\n` + await readFile(join(tempDir, sf), "utf-8") + "\n\n";
+        // 1. PRIORITY FILES (Direct LLM Instructions)
+        const priorityFiles = files.filter(f => /^\.cursorrules$|^\.ai-rules$|rules\.json|prompts\.md/i.test(f));
+
+        // 2. GENERAL RULE FILES
+        const generalRuleFiles = files.filter(f => /rules|instruction|guideline|best-practice/i.test(f) && !priorityFiles.includes(f));
+
+        if (priorityFiles.length > 0 || generalRuleFiles.length > 0) {
+          const targetFiles = [...priorityFiles, ...generalRuleFiles];
+          for (const sf of targetFiles) {
+            const raw = await readFile(join(tempDir, sf), "utf-8");
+            // Noise reduction: strip image tags and clean markdown links
+            const cleanContent = raw.replace(/!\[.*\]\(.*\)/g, "").replace(/\[(.*?)\]\(.*?\)/g, "$1");
+            rulesContent += `--- FROM FILE: ${sf} ---\n${cleanContent}\n\n`;
           }
         } else {
+          // 3. REGEX DOMAIN EXTRACTION
           const mdFiles = files.filter(f => f.toLowerCase().endsWith(".md")).sort((a, b) => a.toLowerCase() === "skill.md" ? -1 : 1);
           if (mdFiles.length > 0) {
             const fullMd = await readFile(join(tempDir, mdFiles[0]), "utf-8");
-            const rulesMatch = fullMd.match(/#+\s*(?:Kurallar|Rules|Best Practices|Instructions|Talimatlar)([\s\S]*?)(?=\n#+ |\Z)/i);
-            if (rulesMatch) {
-              rulesContent = "Extracted Rules:\n" + rulesMatch[0];
+            const regex = /(?:#+\s*(?:Kurallar|Rules|Best Practices|Instructions|Talimatlar|Guidelines|Prerequisites|Requirements|Core Principles|Architecture|Setup|Usage|En İyi Pratikler|İlkeler|Kılavuz|Gereksinimler|Kullanım|Mimari|规则|最佳实践|指南|指令|核心原则|架构|要求|用法))([\s\S]*?)(?=\n#+ |\Z)/ig;
+
+            let match;
+            while ((match = regex.exec(fullMd)) !== null) {
+              rulesContent += match[0].trim() + "\n\n";
+            }
+
+            if (!rulesContent) {
+              rulesContent = "No structured rules found. Summary of README:\n" + fullMd.substring(0, 1200) + "...\n[Note: Use `import_best_skill` for the full documentation.]";
             } else {
-              rulesContent = fullMd; // Fallback to full doc
+              // Noise reduction for extracted rules as well
+              rulesContent = rulesContent.replace(/!\[.*\]\(.*\)/g, "").replace(/\[(.*?)\]\(.*?\)/g, "$1");
             }
           } else {
-            rulesContent = "No rules or documentation found.";
+            rulesContent = "No explicit rules or markdown documentation found in this skill package.";
           }
         }
 
         return {
           content: [
-            { type: "text", text: `Status: Rules successfully extracted for ${topic} ${isCached ? "(from cache)" : ""}` },
+            { type: "text", text: `[SkillNet Optimizer] Rules for "${topic}" injected. Source: ${isCached ? "Local Cache" : "Remote SkillNet"}` },
             { type: "text", text: rulesContent }
           ]
         };
       } catch (err) {
-        return { isError: true, content: [{ type: "text", text: `Failed to get skill rules: \n${err.stderr || err.message}` }] };
+        return { isError: true, content: [{ type: "text", text: `Failed to get skill rules: \n${err.stderr || err.message}\nIf you think this is a system error, please run the 'health_check' tool to diagnose dependencies.` }] };
       }
     }
 
@@ -296,7 +348,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       content: [
         {
           type: "text",
-          text: `Command execution failed: ${error.message}${errorDetails}\nPlease ensure 'skillnet-ai' python package is installed and accessible.`,
+          text: `Command execution failed: ${error.message}${errorDetails}\nIf you think this is a system error, please run the 'health_check' tool to diagnose dependencies.`,
         },
       ],
     };
