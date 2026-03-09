@@ -42,11 +42,39 @@ describe('SkillNet MCP Command Builder', () => {
         expect(cmd).toEqual(['analyze', './skills']);
     });
 
-    it('should throw on missing arguments', () => {
+    // --- NEGATİF (NON-EXPECT) VE HATA BEKLENEN (EXPECT ERROR) TESTLER ---
+
+    it('should throw on missing arguments for search_skills', () => {
         expect(() => buildCommand('search_skills', null)).toThrow('Missing arguments');
     });
 
-    it('should throw on unknown tool', () => {
-        expect(() => buildCommand('unknown_tool', { a: 1 })).toThrow('Unknown tool: unknown_tool');
+    it('should throw on missing arguments entirely', () => {
+        expect(() => buildCommand('download_skill')).toThrow('Missing arguments');
+    });
+
+    it('should throw on explicitly unknown tools', () => {
+        expect(() => buildCommand('non_existent_tool', { a: 1 })).toThrow('Unknown tool: non_existent_tool');
+    });
+
+    it('should throw out of bounds tools (health_check, get_skill_rules) since they are handled independently', () => {
+        // These tools are handled directly by the MCP server handler, not CLI Builder
+        expect(() => buildCommand('health_check', {})).toThrow('Unknown tool: health_check');
+        expect(() => buildCommand('get_skill_rules', { topic: 'react' })).toThrow('Unknown tool: get_skill_rules');
+        expect(() => buildCommand('import_best_skill', { topic: 'node' })).toThrow('Unknown tool: import_best_skill');
+    });
+
+    // --- POZİTİF (EXPECT) VE OPSİYONEL PARAMETRE TESTLERİ ---
+
+    it('should NOT include optional flags if not provided', () => {
+        const cmd = buildCommand('search_skills', { q: 'react' });
+        expect(cmd).not.toContain('--mode'); // explicitly checking negative logic (non expect)
+        expect(cmd).not.toContain('--limit');
+    });
+
+    it('should correctly ignore unrecognized arguments in valid tools', () => {
+        const cmd = buildCommand('evaluate_skill', { target: './dir', unsupported_flag: true });
+        // It should build successfully but ignore 'unsupported_flag'
+        expect(cmd).toEqual(['evaluate', './dir']);
+        expect(cmd).not.toContain('unsupported_flag');
     });
 });
