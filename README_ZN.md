@@ -1,7 +1,7 @@
 # SkillNet MCP 服务器
 
-- [🇬🇧 English](README.md)
 - [🇹🇷 Türkçe (Turkish)](README_TR.md)
+- [🇬🇧 English](README.md)
 - [📝 更新日志 (Changelog)](CHANGELOG.md)
 
 > **Empowering AI Agents with 400k+ Specialized Skills**
@@ -221,10 +221,10 @@ docker build -t skillnet-mcp-local .
 以下是您可以直接向您的 AI 智能体发出的一些自主指令示例：
 - **`import_best_skill`**: *"我准备用 React Native 写一个项目。请在 Skillnet 上找到最受欢迎的 React Native 技能，将其加载到你的记忆中，然后开始创建应用。"*
 - **`get_skill_rules`**: *"在我们开始重构之前，请使用 `get_skill_rules` 从 Skillnet 提取 'Clean Architecture' 的核心架构指南并作为您的系统规则。"*
-- **`search_skills`**: *"Skillnet 上有哪些关于数据库优化的技能？请列出评分最高的 3 个。"*
+- **`search_skills`**: *"Skillnet 上有哪些关于数据库优化的技能？请列出评分最高的 3 个。跳过评分低于 4 星的技能，并查看第二页的结果。"*
 - **`download_skill`**: *"请下载这个 GitHub 链接中的技能，阅读其 SKILL.md 文件，并向我总结它的架构。"*
-- **`create_skill`**: *"分析我们项目 `src/` 目录下的代码，并从中创建一个标准化的技能包，供团队重复使用。"*
-- **`evaluate_skill`**: *"为这个下载的技能生成一份关于安全性和完整性的 5 维度评估报告，如果有漏洞请警告我。"*
-- **`analyze_skills`**: *"映射我们所有已下载技能之间的依赖关系，并展示它们是否存在冲突。"*
+- **`create_skill`**: *"分析我们项目 `src/` 目录下的代码，并从中创建一个标准化的技能包，以最多 50 个文件为上限，供团队重复使用。"*
+- **`evaluate_skill`**: *"为这个下载的技能生成一份关于安全性和完整性的评估报告，并使用自定义的名称和描述来分类跟踪。"*
+- **`analyze_skills`**: *"映射我们所有已下载技能之间的依赖关系，展示它们是否存在冲突，并将结果在本地保存为依赖关系图。"*
 
 开始愉快地为您量身打造专属 AI 的智能体“技能网”吧！

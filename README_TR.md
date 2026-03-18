@@ -1,7 +1,7 @@
 # SkillNet MCP Sunucusu
 
-- [🇬🇧 English](README.md)
 - [🇨🇳 中文 (Chinese)](README_ZN.md)
+- [🇬🇧 English](README.md)
 - [📝 Sürüm Notları (Changelog)](CHANGELOG.md)
 
 > **Empowering AI Agents with 400k+ Specialized Skills**
@@ -221,10 +221,10 @@ Yapılandırmayı tamamladıktan sonra ajanınız MCP protokolü ile aşağıdak
 Ajanınıza verebileceğiniz bazı otonom komut örnekleri:
 - **`import_best_skill`**: *"React Native ile bir proje yazacağım, Skillnet'teki en popüler React Native yeteneğini bul ve hafızana al, sonra da projeyi oluştur."*
 - **`get_skill_rules`**: *"Mevcut projede Clean Architecture kurallarını uygulayacağız. `get_skill_rules` aracını kullanarak sistem mimarisi prensiplerini ajan yönergelerine enjekte et."*
-- **`search_skills`**: *"Veritabanı optimizasyonu ile ilgili Skillnet üzerinde hangi yetenekler var? En yüksek yıldızlı 3 tanesini listele."*
+- **`search_skills`**: *"Veritabanı optimizasyonu ile ilgili Skillnet üzerinde hangi yetenekler var? En yüksek yıldızlı 3 tanesini listele. 4 yıldızın altındaki yetenekleri atla ve sonuçların ikinci sayfasına da bak."*
 - **`download_skill`**: *"Şu GitHub linkindeki yeteneği indir ve içerisindeki SKILL.md dosyasını okuyarak bana mimariyi özetle."*
-- **`create_skill`**: *"Mevcut projemizin `src/` klasöründeki kodları analiz et ve bundan takımın kullanabileceği standart bir yetenek (skill) paketi oluştur."*
-- **`evaluate_skill`**: *"İndirdiğimiz bu yeteneğin güvenlik ve bütünlük açısından 5 boyutlu değerlendirme raporunu çıkar, zayıf yönleri varsa beni uyar."*
-- **`analyze_skills`**: *"İndirdiğimiz tüm yetenekler arasındaki bağımlılık ilişkilerini haritala ve hangi yeteneklerin birbiriyle çakıştığını göster."*
+- **`create_skill`**: *"Mevcut projemizin `src/` klasöründeki kodları analiz et ve takımın kullanabileceği standart bir yetenek (skill) paketi oluştur. Token tasarrufu için analizi maksimum 50 dosya ile sınırlandır."*
+- **`evaluate_skill`**: *"İndirdiğimiz bu yeteneğin güvenlik ve bütünlük açısından değerlendirme raporunu çıkar. Bunu yaparken takip edebilmemiz için ona özel bir isim ve kategori belirle."*
+- **`analyze_skills`**: *"İndirdiğimiz tüm yetenekler arasındaki bağımlılık ilişkilerini haritala, sonuçları da cihazıma şema resim dosyası olarak kaydet."*
 
 Kendi özel yapay zeka ajan yetenek (skill) havuzunuzu kurmanın tadını çıkarın!

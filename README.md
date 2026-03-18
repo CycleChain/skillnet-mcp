@@ -199,10 +199,10 @@ Once configured, your agent gets access to the following underlying actions via 
 Here are some autonomous prompt examples you can give to your AI Agent:
 - **`import_best_skill`**: *"I'm going to write a project with React Native. Find the most popular React Native skill on Skillnet, import it into your memory, and then generate the app."*
 - **`get_skill_rules`**: *"Before we start refactoring, use `get_skill_rules` to pull the core architectural guidelines for 'Clean Architecture' from Skillnet."*
-- **`search_skills`**: *"What skills are available on Skillnet regarding database optimization? List the top 3 highest-rated ones."*
+- **`search_skills`**: *"What skills are available on Skillnet regarding database optimization? List the top 3 highest-rated ones. Skip any skills with less than 4 stars and check the second page of results."*
 - **`download_skill`**: *"Download the skill from this GitHub link, read its SKILL.md, and summarize its architecture to me."*
-- **`create_skill`**: *"Analyze the code in our `src/` directory and create a standardized skill package from it that our team can reuse."*
-- **`evaluate_skill`**: *"Generate a 5-dimensional evaluation report for this downloaded skill regarding its safety and completeness, and warn me if there are vulnerabilities."*
-- **`analyze_skills`**: *"Map the dependency relationships between all our downloaded skills and show me if any overlap or conflict."*
+- **`create_skill`**: *"Analyze the code in our `src/` directory and create a standardized skill package from it that our team can reuse. Restrict it to a maximum of 50 files to save tokens."*
+- **`evaluate_skill`**: *"Generate a 5-dimensional evaluation report for this downloaded skill regarding its safety and completeness, using a custom name and description for tracking."*
+- **`analyze_skills`**: *"Map the dependency relationships between all our downloaded skills, show me if any overlap, and save the result locally as a relationship diagram."*
 
 Enjoy building your personal AI agent skill graph!
