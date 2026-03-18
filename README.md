@@ -3,11 +3,11 @@
 * [🇹🇷 Türkçe (Turkish)](README_TR.md)
 * [🇨🇳 中文 (Chinese)](README_ZN.md)
 
-> **Empowering AI Agents with 200k+ Specialized Skills**
+> **Empowering AI Agents with 400k+ Specialized Skills**
 > 
 > SkillNet MCP is a high-performance bridge established between AI agents (Claude, Cursor, Windsurf) and SkillNet, the world's most comprehensive agent skill library.
 > 
-> An ordinary agent just writes code; an agent equipped with SkillNet MCP writes code knowing the "best practice" rules in more than 200,000 domains of expertise (Architecture, DevOps, AIGC, Security).
+> An ordinary agent just writes code; an agent equipped with SkillNet MCP writes code knowing the "best practice" rules in more than 400,000 domains of expertise (Architecture, DevOps, AIGC, Security).
 
 ---
 
@@ -188,7 +188,7 @@ Once configured, your agent gets access to the following underlying actions via 
 - **`health_check`**: Self-diagnostic tool. Checks if Python, Node, and SkillNet CLI are properly installed. Agents will autonomously run this if tools fail.
 - **`import_best_skill`**: Dynamically searches for the highest-rated skill on a given topic, downloads it, and immediately returns its entire documentation to your agent's context.
 - **`get_skill_rules`**: A token-friendly alternative to `import_best_skill`. Extracts only the core rules and system instructions (e.g., `rules.json` or `PROMPT.md`) without loading the full documentation.
-- **`search_skills`**: Search across 200,000+ skills by keywords or semantics.
+- **`search_skills`**: Search across 400,000+ skills by keywords or semantics.
 - **`download_skill`**: Install remote skill code directly to your local file system.
 - **`create_skill`**: Turn repos, PDFs, and prompts into structured skill packages locally.
 - **`evaluate_skill`**: Get a 5-D report (Safety, Completeness, etc.) of any skill.

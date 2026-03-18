@@ -3,11 +3,11 @@
 * [🇬🇧 English](README.md)
 * [🇨🇳 中文 (Chinese)](README_ZN.md)
 
-> **Empowering AI Agents with 200k+ Specialized Skills**
+> **Empowering AI Agents with 400k+ Specialized Skills**
 > 
 > SkillNet MCP, yapay zeka ajanları (Claude, Cursor, Windsurf) ile dünyanın en kapsamlı ajan yetenek kütüphanesi olan SkillNet arasında kurulan yüksek performanslı bir köprüdür.
 > 
-> Sıradan bir ajan sadece kod yazar; SkillNet MCP ile donatılmış bir ajan ise 200.000'den fazla uzmanlık alanında (Architecture, DevOps, AIGC, Security) "best practice" kurallarını bilerek kod yazar.
+> Sıradan bir ajan sadece kod yazar; SkillNet MCP ile donatılmış bir ajan ise 400.000'den fazla uzmanlık alanında (Architecture, DevOps, AIGC, Security) "best practice" kurallarını bilerek kod yazar.
 
 ---
 
@@ -210,7 +210,7 @@ Yapılandırmayı tamamladıktan sonra ajanınız MCP protokolü ile aşağıdak
 - **`health_check`**: Kendi kendini teşhis aracı. Sistemde Python, Node ve SkillNet CLI'ın kurulu olup olmadığını kontrol eder. Hata durumunda ajanlar bunu otomatik çalıştırır.
 - **`import_best_skill`**: Belirli bir konu (geliştirme dilleri, teknolojiler vb.) için en yüksek yıldızlı skillnet yeteneğini anlık olarak arar, indirir ve en iyi pratikleri ajanınızın hafızasına hemen yükler.
 - **`get_skill_rules`**: LLM token dostu hafif bir yetenek aracıdır. Tüm belgesini vermek yerine, sadece o yetenek paketindeki kritik kuralları (rules.json, kurallar bölümü vb.) getirerek ajanın bağlamında tasarruf sağlar.
-- **`search_skills`**: Anahtar kelime veya anlamsal eşleşmeyle 200.000'den fazla yeteneği arayın.
+- **`search_skills`**: Anahtar kelime veya anlamsal eşleşmeyle 400.000'den fazla yeteneği arayın.
 - **`download_skill`**: Uzaktaki yetenekleri cihazınıza doğrudan indirin.
 - **`create_skill`**: Github depolarını, PDF'leri ya da istemleri (prompts) yerel yetenek paketlerine çevirin.
 - **`evaluate_skill`**: Herhangi bir yetenek hakkında 5 Boyutlu Değerlendirme raporu alın (Güvenlik, Bütünlük, vb.).

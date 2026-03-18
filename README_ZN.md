@@ -3,11 +3,11 @@
 * [🇬🇧 English](README.md)
 * [🇹🇷 Türkçe (Turkish)](README_TR.md)
 
-> **Empowering AI Agents with 200k+ Specialized Skills**
+> **Empowering AI Agents with 400k+ Specialized Skills**
 > 
 > SkillNet MCP 是在 AI 智能体（Claude、Cursor、Windsurf）与全球最全面的智能体技能库 SkillNet 之间建立的高性能桥梁。
 > 
-> 普通的智能体只会写代码；而配备了 SkillNet MCP 的智能体则能在超过 200,000 个专业领域（Architecture, DevOps, AIGC, Security）中，了解“最佳实践”规则来编写代码。
+> 普通的智能体只会写代码；而配备了 SkillNet MCP 的智能体则能在超过 400,000 个专业领域（Architecture, DevOps, AIGC, Security）中，了解“最佳实践”规则来编写代码。
 
 ---
 
@@ -210,7 +210,7 @@ docker build -t skillnet-mcp-local .
 - **`health_check`**: 系统自检工具。检查 Python、Node 和 SkillNet CLI 是否正确安装。遇到错误时智能体会自动运行此工具排查依赖。
 - **`import_best_skill`**: 动态搜索特定主题最高评分的技能，立即下载并将其全套文档载入到智能体的上下文中，实现技能的热更新与即插即用。
 - **`get_skill_rules`**: `import_best_skill` 的 Token 友好型替代方案。仅提取技能中的核心规则和系统指令（例如 `rules.json` 或重点规则部分），避免加载完整文档浪费 Token。
-- **`search_skills`**: 通过关键字或语义匹配在全球超 200,000 项技能库中进行搜索。
+- **`search_skills`**: 通过关键字或语义匹配在全球超 400,000 项技能库中进行搜索。
 - **`download_skill`**: 从远程地址直接安装技能到您的本地文件系统中。
 - **`create_skill`**: 将 Github 仓库、PDF 文件，甚至自然语言指令，提炼成标准化结构的技能包。
 - **`evaluate_skill`**: 根据 安全性、完整性 等 5 个重点维度的质量对各项技能进行评分分析。
