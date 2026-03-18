@@ -1,7 +1,8 @@
 # SkillNet MCP 服务器
 
-* [🇬🇧 English](README.md)
-* [🇹🇷 Türkçe (Turkish)](README_TR.md)
+- [🇬🇧 English](README.md)
+- [🇹🇷 Türkçe (Turkish)](README_TR.md)
+- [📝 更新日志 (Changelog)](CHANGELOG.md)
 
 > **Empowering AI Agents with 400k+ Specialized Skills**
 > 

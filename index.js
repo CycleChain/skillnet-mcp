@@ -78,7 +78,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             mode: { type: "string", description: "keyword or vector", enum: ["keyword", "vector"] },
             limit: { type: "number", description: "Results per page" },
             category: { type: "string", description: "Filter category e.g., Development, AIGC" },
-            sort_by: { type: "string", description: "Sort by stars or recent", enum: ["stars", "recent"] }
+            sort_by: { type: "string", description: "Sort by stars or recent", enum: ["stars", "recent"] },
+            page: { type: "number", description: "Page number (only for keyword mode)" },
+            min_stars: { type: "number", description: "Minimum star rating (only for keyword mode)" },
+            threshold: { type: "number", description: "Similarity threshold 0.0-1.0 (only for vector mode)" }
           },
           required: ["q"],
         },
@@ -104,7 +107,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             source_type: { type: "string", enum: ["github", "office", "prompt", "trajectory"] },
             source: { type: "string", description: "URL or local path or prompt text" },
             output_dir: { type: "string", description: "Directory to save created skill" },
-            model: { type: "string", description: "LLM model to use e.g. gpt-4o" }
+            model: { type: "string", description: "LLM model to use e.g. gpt-4o" },
+            max_files: { type: "number", description: "Max code files to analyze (--github only)" }
           },
           required: ["source_type", "source"],
         },
@@ -116,6 +120,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           type: "object",
           properties: {
             target: { type: "string", description: "Target GitHub URL or local path to evaluate" },
+            name: { type: "string", description: "Name of the skill (overrides auto-detection)" },
+            category: { type: "string", description: "Category of the skill" },
+            description: { type: "string", description: "Short description of what the skill does" },
+            model: { type: "string", description: "LLM model to use" },
+            max_workers: { type: "number", description: "Concurrency for batch operations" }
           },
           required: ["target"],
         },
@@ -127,6 +136,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           type: "object",
           properties: {
             skills_dir: { type: "string", description: "Local directory containing skills" },
+            save: { type: "boolean", description: "Save the result to relationships.json" },
+            model: { type: "string", description: "LLM model to use" }
           },
           required: ["skills_dir"],
         },
@@ -149,6 +160,9 @@ export function buildCommand(name, args) {
       if (args.limit) commandArgs.push("--limit", args.limit.toString());
       if (args.category) commandArgs.push("--category", args.category);
       if (args.sort_by) commandArgs.push("--sort-by", args.sort_by);
+      if (args.page !== undefined) commandArgs.push("--page", args.page.toString());
+      if (args.min_stars !== undefined) commandArgs.push("--min-stars", args.min_stars.toString());
+      if (args.threshold !== undefined) commandArgs.push("--threshold", args.threshold.toString());
       break;
 
     case "download_skill":
@@ -164,14 +178,23 @@ export function buildCommand(name, args) {
 
       if (args.output_dir) commandArgs.push("-d", args.output_dir);
       if (args.model) commandArgs.push("--model", args.model);
+      if (args.max_files !== undefined) commandArgs.push("--max-files", args.max_files.toString());
       break;
 
     case "evaluate_skill":
       commandArgs.push("evaluate", args.target);
+      if (args.name) commandArgs.push("--name", args.name);
+      if (args.category) commandArgs.push("--category", args.category);
+      if (args.description) commandArgs.push("--description", args.description);
+      if (args.model) commandArgs.push("--model", args.model);
+      if (args.max_workers !== undefined) commandArgs.push("--max-workers", args.max_workers.toString());
       break;
 
     case "analyze_skills":
       commandArgs.push("analyze", args.skills_dir);
+      if (args.save === false) commandArgs.push("--no-save");
+      else if (args.save === true) commandArgs.push("--save");
+      if (args.model) commandArgs.push("--model", args.model);
       break;
 
     default:

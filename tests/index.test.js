@@ -11,9 +11,12 @@ describe('SkillNet MCP Command Builder', () => {
             mode: 'vector',
             limit: 10,
             category: 'Development',
-            sort_by: 'stars'
+            sort_by: 'stars',
+            page: 2,
+            min_stars: 4,
+            threshold: 0.85
         });
-        expect(cmd2).toEqual(['search', 'pdf', '--mode', 'vector', '--limit', '10', '--category', 'Development', '--sort-by', 'stars']);
+        expect(cmd2).toEqual(['search', 'pdf', '--mode', 'vector', '--limit', '10', '--category', 'Development', '--sort-by', 'stars', '--page', '2', '--min-stars', '4', '--threshold', '0.85']);
     });
 
     it('should build download_skill command', () => {
@@ -22,8 +25,8 @@ describe('SkillNet MCP Command Builder', () => {
     });
 
     it('should build create_skill command for different sources', () => {
-        const cmdGithub = buildCommand('create_skill', { source_type: 'github', source: 'url', output_dir: './out' });
-        expect(cmdGithub).toEqual(['create', '--github', 'url', '-d', './out']);
+        const cmdGithub = buildCommand('create_skill', { source_type: 'github', source: 'url', output_dir: './out', max_files: 100 });
+        expect(cmdGithub).toEqual(['create', '--github', 'url', '-d', './out', '--max-files', '100']);
 
         const cmdOffice = buildCommand('create_skill', { source_type: 'office', source: 'file.pdf', model: 'gpt-4o' });
         expect(cmdOffice).toEqual(['create', '--office', 'file.pdf', '--model', 'gpt-4o']);
@@ -33,13 +36,23 @@ describe('SkillNet MCP Command Builder', () => {
     });
 
     it('should build evaluate_skill command', () => {
-        const cmd = buildCommand('evaluate_skill', { target: './skills/web_search' });
-        expect(cmd).toEqual(['evaluate', './skills/web_search']);
+        const cmd = buildCommand('evaluate_skill', { 
+            target: './skills/web_search',
+            name: 'WebSearcher',
+            category: 'Data',
+            description: 'Searches the web',
+            model: 'gpt-4',
+            max_workers: 10
+        });
+        expect(cmd).toEqual(['evaluate', './skills/web_search', '--name', 'WebSearcher', '--category', 'Data', '--description', 'Searches the web', '--model', 'gpt-4', '--max-workers', '10']);
     });
 
     it('should build analyze_skills command', () => {
-        const cmd = buildCommand('analyze_skills', { skills_dir: './skills' });
-        expect(cmd).toEqual(['analyze', './skills']);
+        const cmdSave = buildCommand('analyze_skills', { skills_dir: './skills', save: true, model: 'gpt-3.5-turbo' });
+        expect(cmdSave).toEqual(['analyze', './skills', '--save', '--model', 'gpt-3.5-turbo']);
+
+        const cmdNoSave = buildCommand('analyze_skills', { skills_dir: './skills', save: false });
+        expect(cmdNoSave).toEqual(['analyze', './skills', '--no-save']);
     });
 
     // --- NEGATİF (NON-EXPECT) VE HATA BEKLENEN (EXPECT ERROR) TESTLER ---

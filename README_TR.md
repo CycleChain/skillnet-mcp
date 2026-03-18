@@ -1,7 +1,8 @@
 # SkillNet MCP Sunucusu
 
-* [🇬🇧 English](README.md)
-* [🇨🇳 中文 (Chinese)](README_ZN.md)
+- [🇬🇧 English](README.md)
+- [🇨🇳 中文 (Chinese)](README_ZN.md)
+- [📝 Sürüm Notları (Changelog)](CHANGELOG.md)
 
 > **Empowering AI Agents with 400k+ Specialized Skills**
 > 
