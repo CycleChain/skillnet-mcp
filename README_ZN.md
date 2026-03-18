@@ -1,6 +1,6 @@
 # SkillNet MCP 服务器
 
-[![Tests / CI](https://github.com/CycleChain/skillnet-mcp/actions/workflows/test.yml/badge.svg)](https://github.com/CycleChain/skillnet-mcp/actions/workflows/test.yml)
+[![Tests / CI](https://github.com/CycleChain/skillnet-mcp/actions/workflows/test.yml/badge.svg)](https://github.com/CycleChain/skillnet-mcp/actions/workflows/test.yml) [![Version](https://img.shields.io/github/package-json/v/CycleChain/skillnet-mcp)](https://github.com/CycleChain/skillnet-mcp) [![Docker Image Version](https://img.shields.io/docker/v/fmdogancan/skillnet-mcp?sort=semver)](https://hub.docker.com/r/fmdogancan/skillnet-mcp) [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 - [🇹🇷 Türkçe (Turkish)](README_TR.md)
 - [🇬🇧 English](README.md)
 - [📝 更新日志 (Changelog)](CHANGELOG.md)
