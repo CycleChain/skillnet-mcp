@@ -1,5 +1,6 @@
 # SkillNet MCP Sunucusu
 
+[![Tests / CI](https://github.com/CycleChain/skillnet-mcp/actions/workflows/test.yml/badge.svg)](https://github.com/CycleChain/skillnet-mcp/actions/workflows/test.yml)
 - [🇨🇳 中文 (Chinese)](README_ZN.md)
 - [🇬🇧 English](README.md)
 - [📝 Sürüm Notları (Changelog)](CHANGELOG.md)

@@ -1,5 +1,6 @@
 # SkillNet MCP 服务器
 
+[![Tests / CI](https://github.com/CycleChain/skillnet-mcp/actions/workflows/test.yml/badge.svg)](https://github.com/CycleChain/skillnet-mcp/actions/workflows/test.yml)
 - [🇹🇷 Türkçe (Turkish)](README_TR.md)
 - [🇬🇧 English](README.md)
 - [📝 更新日志 (Changelog)](CHANGELOG.md)
