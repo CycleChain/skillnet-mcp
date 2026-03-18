@@ -1,0 +1,37 @@
+name: Tests / CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install skillnet-ai CLI
+      run: |
+        python -m pip install --upgrade pip
+        pip install skillnet-ai
+
+    - name: Install Node dependencies
+      run: npm install
+
+    - name: Run Jest Tests
+      run: npm test
