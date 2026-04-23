@@ -1,6 +1,6 @@
 {
   "name": "skillnet-mcp",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Model Context Protocol (MCP) server wrapping the official SkillNet AI CLI for integrating AI Agent Skills seamlessly.",
   "main": "index.js",
   "bin": {

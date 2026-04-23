@@ -94,6 +94,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             url: { type: "string", description: "URL of the skill to download (e.g., GitHub repo)" },
             target_dir: { type: "string", description: "Local directory to download the skill into" },
+            token: { type: "string", description: "GitHub Personal Access Token for private repos or rate limits" },
+            mirror: { type: "string", description: "Mirror URL for fallback when GitHub is slow/unavailable" },
           },
           required: ["url", "target_dir"],
         },
@@ -166,7 +168,10 @@ export function buildCommand(name, args) {
       break;
 
     case "download_skill":
-      commandArgs.push("download", args.url, "-d", args.target_dir);
+      commandArgs.push("download", args.url);
+      if (args.target_dir) commandArgs.push("-d", args.target_dir);
+      if (args.token) commandArgs.push("-t", args.token);
+      if (args.mirror) commandArgs.push("-m", args.mirror);
       break;
 
     case "create_skill":

@@ -191,7 +191,7 @@ Once configured, your agent gets access to the following underlying actions via 
 - **`import_best_skill`**: Dynamically searches for the highest-rated skill on a given topic, downloads it, and immediately returns its entire documentation to your agent's context.
 - **`get_skill_rules`**: A token-friendly alternative to `import_best_skill`. Extracts only the core rules and system instructions (e.g., `rules.json` or `PROMPT.md`) without loading the full documentation.
 - **`search_skills`**: Search across 400,000+ skills by keywords or semantics.
-- **`download_skill`**: Install remote skill code directly to your local file system.
+- **`download_skill`**: Install remote skill code directly to your local file system. Supports mirroring (`--mirror`) and private repo authentication (`--token`).
 - **`create_skill`**: Turn repos, PDFs, and prompts into structured skill packages locally.
 - **`evaluate_skill`**: Get a 5-D report (Safety, Completeness, etc.) of any skill.
 - **`analyze_skills`**: Trace dependencies and build semantic relationship maps over a group of skills.

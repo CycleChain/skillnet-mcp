@@ -22,6 +22,9 @@ describe('SkillNet MCP Command Builder', () => {
     it('should build download_skill command', () => {
         const cmd = buildCommand('download_skill', { url: 'https://github.com/abc', target_dir: './skills' });
         expect(cmd).toEqual(['download', 'https://github.com/abc', '-d', './skills']);
+
+        const cmdWithOpts = buildCommand('download_skill', { url: 'https://github.com/abc', target_dir: './skills', token: 'mytoken', mirror: 'https://ghfast.top/' });
+        expect(cmdWithOpts).toEqual(['download', 'https://github.com/abc', '-d', './skills', '-t', 'mytoken', '-m', 'https://ghfast.top/']);
     });
 
     it('should build create_skill command for different sources', () => {

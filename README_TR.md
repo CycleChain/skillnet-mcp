@@ -213,7 +213,7 @@ Yapılandırmayı tamamladıktan sonra ajanınız MCP protokolü ile aşağıdak
 - **`import_best_skill`**: Belirli bir konu (geliştirme dilleri, teknolojiler vb.) için en yüksek yıldızlı skillnet yeteneğini anlık olarak arar, indirir ve en iyi pratikleri ajanınızın hafızasına hemen yükler.
 - **`get_skill_rules`**: LLM token dostu hafif bir yetenek aracıdır. Tüm belgesini vermek yerine, sadece o yetenek paketindeki kritik kuralları (rules.json, kurallar bölümü vb.) getirerek ajanın bağlamında tasarruf sağlar.
 - **`search_skills`**: Anahtar kelime veya anlamsal eşleşmeyle 400.000'den fazla yeteneği arayın.
-- **`download_skill`**: Uzaktaki yetenekleri cihazınıza doğrudan indirin.
+- **`download_skill`**: Uzaktaki yetenekleri cihazınıza doğrudan indirin. Yansıtma (`--mirror`) ve özel depo kimlik doğrulaması (`--token`) destekler.
 - **`create_skill`**: Github depolarını, PDF'leri ya da istemleri (prompts) yerel yetenek paketlerine çevirin.
 - **`evaluate_skill`**: Herhangi bir yetenek hakkında 5 Boyutlu Değerlendirme raporu alın (Güvenlik, Bütünlük, vb.).
 - **`analyze_skills`**: Birden çok yetenek arasındaki bağımlılıkları analiz edip ilişkilerini haritalayın.

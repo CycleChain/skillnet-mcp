@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2026-04-23
+
+### Added
+- **`skillnet-ai` v0.0.18 Integration Updates:**
+  - `download_skill`: Added `--token` flag for GitHub Personal Access Tokens, improving rate limits and private repository access.
+  - `download_skill`: Added `--mirror` flag for custom registry domain routing (e.g., ghfast.top).
+
 ## [1.1.0] - 2026-03-18
 
 ### Added
