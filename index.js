@@ -19,7 +19,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const server = new Server(
   {
     name: "skillnet-mcp",
-    version: "1.0.0",
+    version: "1.3.0",
   },
   {
     capabilities: {
@@ -389,7 +389,9 @@ async function main() {
   console.error("SkillNet MCP server running on stdio");
 }
 
-main().catch((error) => {
-  console.error("Server error:", error);
-  process.exit(1);
-});
+if (process.env.NODE_ENV !== "test") {
+  main().catch((error) => {
+    console.error("Server error:", error);
+    process.exit(1);
+  });
+}

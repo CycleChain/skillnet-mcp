@@ -5,11 +5,11 @@
 - [🇨🇳 中文 (Chinese)](README_ZN.md)
 - [📝 Changelog](CHANGELOG.md)
 
-> **Empowering AI Agents with 400k+ Specialized Skills**
+> **Empowering AI Agents with 600k+ Specialized Skills**
 > 
 > SkillNet MCP is a high-performance bridge established between AI agents (Claude, Cursor, Windsurf) and SkillNet, the world's most comprehensive agent skill library.
 > 
-> An ordinary agent just writes code; an agent equipped with SkillNet MCP writes code knowing the "best practice" rules in more than 400,000 domains of expertise (Architecture, DevOps, AIGC, Security).
+> An ordinary agent just writes code; an agent equipped with SkillNet MCP writes code knowing the "best practice" rules in more than 600,000 domains of expertise (Architecture, DevOps, AIGC, Security).
 
 ---
 

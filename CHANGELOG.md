@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2026-07-27
+
+### Changed
+- **Skill Pool Synchronization:** Updated official package documentation (EN, TR, ZN) to reflect the milestone of empowering AI agents with 600,000+ Specialized Skills.
+- **Server Execution Guard:** Enhanced server startup logic in `index.js` to guard stdio transport when imported in test suites.
+
 ## [1.2.0] - 2026-04-23
 
 ### Added

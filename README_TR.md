@@ -5,11 +5,11 @@
 - [🇬🇧 English](README.md)
 - [📝 Sürüm Notları (Changelog)](CHANGELOG.md)
 
-> **Empowering AI Agents with 400k+ Specialized Skills**
+> **Empowering AI Agents with 600k+ Specialized Skills**
 > 
 > SkillNet MCP, yapay zeka ajanları (Claude, Cursor, Windsurf) ile dünyanın en kapsamlı ajan yetenek kütüphanesi olan SkillNet arasında kurulan yüksek performanslı bir köprüdür.
 > 
-> Sıradan bir ajan sadece kod yazar; SkillNet MCP ile donatılmış bir ajan ise 400.000'den fazla uzmanlık alanında (Architecture, DevOps, AIGC, Security) "best practice" kurallarını bilerek kod yazar.
+> Sıradan bir ajan sadece kod yazar; SkillNet MCP ile donatılmış bir ajan ise 600.000'den fazla uzmanlık alanında (Architecture, DevOps, AIGC, Security) "best practice" kurallarını bilerek kod yazar.
 
 ---
 
