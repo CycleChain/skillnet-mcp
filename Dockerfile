@@ -1,6 +1,10 @@
 # Step 1: Use a lightweight Node.js image
 FROM node:20-slim
 
+LABEL org.opencontainers.image.title="skillnet-mcp"
+LABEL org.opencontainers.image.version="1.3.0"
+LABEL org.opencontainers.image.description="Model Context Protocol (MCP) server wrapping the official SkillNet AI CLI"
+
 # Step 2: Install Python and necessary system tools
 RUN apt-get update && apt-get install -y \
     python3 \
@@ -10,7 +14,7 @@ RUN apt-get update && apt-get install -y \
 
 # Step 3: Install SkillNet Python SDK
 # The --break-system-packages flag might be required for pip installations on newer Debian versions
-RUN pip3 install --no-cache-dir --break-system-packages skillnet-ai
+RUN pip3 install --no-cache-dir --upgrade --break-system-packages skillnet-ai
 
 # Step 4: Create application directory and copy files
 WORKDIR /app
