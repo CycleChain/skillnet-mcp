@@ -1,10 +1,13 @@
 import { jest } from '@jest/globals';
-import { buildCommand } from '../index.js';
+import { mkdtemp, mkdir, writeFile, rm } from 'fs/promises';
+import { tmpdir } from 'os';
+import { join } from 'path';
+import { buildCommand, parseCliJson, formatSearchResults, resolveSkillDir } from '../index.js';
 
 describe('SkillNet MCP Command Builder', () => {
     it('should build search_skills command', () => {
         const cmd1 = buildCommand('search_skills', { q: 'pdf' });
-        expect(cmd1).toEqual(['search', 'pdf']);
+        expect(cmd1).toEqual(['search', 'pdf', '--json']);
 
         const cmd2 = buildCommand('search_skills', {
             q: 'pdf',
@@ -16,15 +19,16 @@ describe('SkillNet MCP Command Builder', () => {
             min_stars: 4,
             threshold: 0.85
         });
-        expect(cmd2).toEqual(['search', 'pdf', '--mode', 'vector', '--limit', '10', '--category', 'Development', '--sort-by', 'stars', '--page', '2', '--min-stars', '4', '--threshold', '0.85']);
+        expect(cmd2).toEqual(['search', 'pdf', '--mode', 'vector', '--limit', '10', '--category', 'Development', '--sort-by', 'stars', '--page', '2', '--min-stars', '4', '--threshold', '0.85', '--json']);
     });
 
     it('should build download_skill command', () => {
         const cmd = buildCommand('download_skill', { url: 'https://github.com/abc', target_dir: './skills' });
-        expect(cmd).toEqual(['download', 'https://github.com/abc', '-d', './skills']);
+        expect(cmd).toEqual(['download', 'https://github.com/abc', '-d', './skills', '--json']);
 
-        const cmdWithOpts = buildCommand('download_skill', { url: 'https://github.com/abc', target_dir: './skills', token: 'mytoken', mirror: 'https://ghfast.top/' });
-        expect(cmdWithOpts).toEqual(['download', 'https://github.com/abc', '-d', './skills', '-t', 'mytoken', '-m', 'https://ghfast.top/']);
+        const cmdWithOpts = buildCommand('download_skill', { url: 'https://github.com/abc', target_dir: './skills', token: 'mytoken', mirror: 'https://ghfast.top/', overwrite: true });
+        expect(cmdWithOpts).toEqual(['download', 'https://github.com/abc', '-d', './skills', '-m', 'https://ghfast.top/', '--overwrite', '--json']);
+        expect(cmdWithOpts).not.toContain('mytoken');   // the token is passed as GITHUB_TOKEN
     });
 
     it('should build create_skill command for different sources', () => {
@@ -51,11 +55,12 @@ describe('SkillNet MCP Command Builder', () => {
     });
 
     it('should build analyze_skills command', () => {
-        const cmdSave = buildCommand('analyze_skills', { skills_dir: './skills', save: true, model: 'gpt-3.5-turbo' });
-        expect(cmdSave).toEqual(['analyze', './skills', '--save', '--model', 'gpt-3.5-turbo']);
+        const cmd = buildCommand('analyze_skills', { skills_dir: './skills', output_dir: './graph', force: true, model: 'gpt-4o' });
+        expect(cmd).toEqual(['analyze', './skills', '--output-dir', './graph', '--force', '--model', 'gpt-4o']);
 
-        const cmdNoSave = buildCommand('analyze_skills', { skills_dir: './skills', save: false });
-        expect(cmdNoSave).toEqual(['analyze', './skills', '--no-save']);
+        // skillnet-ai 0.1 has no --save/--no-save; the old argument is ignored
+        const legacy = buildCommand('analyze_skills', { skills_dir: './skills', save: true });
+        expect(legacy).toEqual(['analyze', './skills']);
     });
 
     // --- NEGATİF (NON-EXPECT) VE HATA BEKLENEN (EXPECT ERROR) TESTLER ---
@@ -80,6 +85,33 @@ describe('SkillNet MCP Command Builder', () => {
     });
 
     // --- POZİTİF (EXPECT) VE OPSİYONEL PARAMETRE TESTLERİ ---
+
+    it('should parse skillnet --json envelopes', () => {
+        expect(parseCliJson('{"ok": true, "data": {"path": "/x/y"}, "error": null}').data.path).toBe('/x/y');
+        expect(parseCliJson('{"ok": false, "data": null, "error": {"message": "Destination exists"}}').error.message).toBe('Destination exists');
+        expect(parseCliJson('╭─ table ─╮')).toBeNull();
+        expect(parseCliJson('')).toBeNull();
+    });
+
+    it('should format search results for the agent', () => {
+        const text = formatSearchResults([{ skill_name: 'pdf', skill_description: 'Read PDFs', stars: '12', category: 'Development', author: 'acme', skill_url: 'https://github.com/acme/skills/tree/main/pdf' }]);
+        expect(text).toContain('1. pdf (12 stars, Development, acme)');
+        expect(text).toContain('https://github.com/acme/skills/tree/main/pdf');
+        expect(formatSearchResults([])).toBe('No skills found.');
+    });
+
+    it('should find the downloaded skill folder under the target directory', async () => {
+        const root = await mkdtemp(join(tmpdir(), 'skillnet-mcp-'));
+        try {
+            await mkdir(join(root, 'nested', 'code-reviewer'), { recursive: true });
+            await writeFile(join(root, 'nested', 'code-reviewer', 'SKILL.md'), '---\nname: code-reviewer\n---\n');
+            expect(await resolveSkillDir(join(root, 'nested'))).toBe(join(root, 'nested', 'code-reviewer'));
+            await writeFile(join(root, 'SKILL.md'), '---\nname: flat\n---\n');
+            expect(await resolveSkillDir(root)).toBe(root);
+        } finally {
+            await rm(root, { recursive: true, force: true });
+        }
+    });
 
     it('should NOT include optional flags if not provided', () => {
         const cmd = buildCommand('search_skills', { q: 'react' });

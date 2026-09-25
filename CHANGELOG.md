@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2026-09-26
+
+### Fixed
+- **`skillnet-ai` 0.1.x compatibility:** search and download results are read from the CLI's `--json` output
+  (`{ok, data, error}`) instead of scraping the rich table; CLI errors surface with their message and hint.
+- **`import_best_skill` / `get_skill_rules`:** the CLI stores a skill under `<target>/<skill-name>/`, so the
+  tools found no `SKILL.md` and returned "No .md documentation found". They now use the path reported by the
+  download and resolve older caches the same way.
+- **`analyze_skills`:** `--save/--no-save` no longer exist in 0.1.x; the tool takes `output_dir` and `force`.
+- **`health_check`:** uses `skillnet doctor --json` and reports the CLI version.
+
+### Added
+- **`download_skill`:** `overwrite` option (`--overwrite`).
+- **`SKILLNET_BIN`** environment variable to point at a CLI outside `PATH` (e.g. a `uv tool` install).
+
+### Security
+- **`download_skill`:** the GitHub token is passed to the CLI as `GITHUB_TOKEN` instead of `-t <token>`, so it
+  no longer shows up in the process list.
+
 ## [1.3.0] - 2026-07-27
 
 ### Changed
