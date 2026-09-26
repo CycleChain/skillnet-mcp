@@ -15,11 +15,12 @@ import { dirname, join } from "path";
 
 const execFileAsync = promisify(execFile);
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const SKILLNET_BIN = process.env.SKILLNET_BIN || "skillnet";
 
 const server = new Server(
   {
     name: "skillnet-mcp",
-    version: "1.3.0",
+    version: "1.4.0",
   },
   {
     capabilities: {
@@ -94,8 +95,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             url: { type: "string", description: "URL of the skill to download (e.g., GitHub repo)" },
             target_dir: { type: "string", description: "Local directory to download the skill into" },
-            token: { type: "string", description: "GitHub Personal Access Token for private repos or rate limits" },
+            token: { type: "string", description: "GitHub Personal Access Token for private repos or rate limits (passed as GITHUB_TOKEN, never on the command line)" },
             mirror: { type: "string", description: "Mirror URL for fallback when GitHub is slow/unavailable" },
+            overwrite: { type: "boolean", description: "Replace an existing skill folder after a complete download" },
           },
           required: ["url", "target_dir"],
         },
@@ -138,7 +140,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           type: "object",
           properties: {
             skills_dir: { type: "string", description: "Local directory containing skills" },
-            save: { type: "boolean", description: "Save the result to relationships.json" },
+            output_dir: { type: "string", description: "Directory for the scenario graph and Wiki output" },
+            force: { type: "boolean", description: "Rebuild even if a previous analysis exists" },
             model: { type: "string", description: "LLM model to use" }
           },
           required: ["skills_dir"],
@@ -147,6 +150,69 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     ],
   };
 });
+
+// skillnet-ai >= 0.1 prints {"ok", "data", "error"} with --json (on stdout, also when it exits 1).
+export function parseCliJson(text) {
+  if (!text) return null;
+  try {
+    const parsed = JSON.parse(text);
+    return parsed && typeof parsed === "object" && "ok" in parsed ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export function formatSearchResults(data) {
+  if (!Array.isArray(data) || data.length === 0) return "No skills found.";
+  return data.map((skill, index) => {
+    const meta = [skill.stars !== undefined ? `${skill.stars} stars` : null, skill.category, skill.author]
+      .filter(Boolean).join(", ");
+    return `${index + 1}. ${skill.skill_name}${meta ? ` (${meta})` : ""}\n   ${skill.skill_description || ""}\n   ${skill.skill_url}`;
+  }).join("\n");
+}
+
+// The CLI writes a skill to <target>/<skill-name>/; older caches may hold SKILL.md directly.
+export async function resolveSkillDir(dir) {
+  const entries = await readdir(dir, { withFileTypes: true });
+  if (entries.some((e) => e.isFile() && e.name.toLowerCase() === "skill.md")) return dir;
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    try {
+      await access(join(dir, entry.name, "SKILL.md"), constants.F_OK);
+      return join(dir, entry.name);
+    } catch { }
+  }
+  return dir;
+}
+
+async function runSkillnet(commandArgs, { token } = {}) {
+  const env = { ...process.env };
+  if (token) env.GITHUB_TOKEN = token;
+  try {
+    return await execFileAsync(SKILLNET_BIN, commandArgs, { env, maxBuffer: 16 * 1024 * 1024 });
+  } catch (err) {
+    const parsed = parseCliJson(err.stdout);
+    if (parsed && parsed.error) {
+      const wrapped = new Error(parsed.error.message || "skillnet failed");
+      wrapped.stderr = parsed.error.hint ? `${parsed.error.message}\n${parsed.error.hint}` : parsed.error.message;
+      throw wrapped;
+    }
+    throw err;
+  }
+}
+
+async function bestSkillUrl(topic) {
+  const { stdout } = await runSkillnet(["search", topic, "--limit", "1", "--sort-by", "stars", "--json"]);
+  const parsed = parseCliJson(stdout);
+  const first = parsed && Array.isArray(parsed.data) ? parsed.data[0] : null;
+  return first ? first.skill_url : null;
+}
+
+async function downloadSkill(url, targetDir) {
+  const { stdout } = await runSkillnet(["download", url, "-d", targetDir, "--overwrite", "--json"]);
+  const parsed = parseCliJson(stdout);
+  return parsed && parsed.data && parsed.data.path ? parsed.data.path : resolveSkillDir(targetDir);
+}
 
 export function buildCommand(name, args) {
   if (!args) {
@@ -165,13 +231,15 @@ export function buildCommand(name, args) {
       if (args.page !== undefined) commandArgs.push("--page", args.page.toString());
       if (args.min_stars !== undefined) commandArgs.push("--min-stars", args.min_stars.toString());
       if (args.threshold !== undefined) commandArgs.push("--threshold", args.threshold.toString());
+      commandArgs.push("--json");
       break;
 
     case "download_skill":
       commandArgs.push("download", args.url);
       if (args.target_dir) commandArgs.push("-d", args.target_dir);
-      if (args.token) commandArgs.push("-t", args.token);
       if (args.mirror) commandArgs.push("-m", args.mirror);
+      if (args.overwrite) commandArgs.push("--overwrite");
+      commandArgs.push("--json");        // the token travels in GITHUB_TOKEN, see runSkillnet
       break;
 
     case "create_skill":
@@ -196,9 +264,10 @@ export function buildCommand(name, args) {
       break;
 
     case "analyze_skills":
+      // skillnet-ai 0.1 replaced --save/--no-save with an output directory
       commandArgs.push("analyze", args.skills_dir);
-      if (args.save === false) commandArgs.push("--no-save");
-      else if (args.save === true) commandArgs.push("--save");
+      if (args.output_dir) commandArgs.push("--output-dir", args.output_dir);
+      if (args.force) commandArgs.push("--force");
       if (args.model) commandArgs.push("--model", args.model);
       break;
 
@@ -215,13 +284,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     if (name === "health_check") {
       try {
-        const { stdout: pyVersion } = await execFileAsync("python3", ["--version"]);
-        const { stdout: snVersion } = await execFileAsync("skillnet", ["--help"]);
+        const { stdout } = await runSkillnet(["doctor", "--json"]);
+        const doctor = parseCliJson(stdout);
+        const data = (doctor && doctor.data) || {};
 
         return {
           content: [{
             type: "text",
-            text: `✅ System Healthy:\n- Python: ${pyVersion.trim()}\n- SkillNet CLI: ${snVersion.trim()}\n- Node.js: ${process.version}`
+            text: `✅ System Healthy:\n- SkillNet CLI: ${data.version || "unknown"} (${data.cli || SKILLNET_BIN})\n- Python: ${data.python || "unknown"}\n- Node.js: ${process.version}`
           }]
         };
       } catch (err) {
@@ -248,23 +318,24 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         } catch { }
 
         let skillUrl = `local cache (.temp_skills/${safeTopic})`;
+        let skillDir;
 
         if (!isCached) {
-          const { stdout: searchOut } = await execFileAsync("skillnet", ["search", topic, "--limit", "1", "--sort-by", "stars"]);
-          const urlMatch = searchOut.match(/https:\/\/github\.com\/([^\s│]+)/);
-          if (!urlMatch) {
+          skillUrl = await bestSkillUrl(topic);
+          if (!skillUrl) {
             return { content: [{ type: "text", text: `No skill found for topic: ${topic}.` }] };
           }
-          skillUrl = urlMatch[0];
-          await execFileAsync("skillnet", ["download", skillUrl, "-d", tempDir]);
+          skillDir = await downloadSkill(skillUrl, tempDir);
+        } else {
+          skillDir = await resolveSkillDir(tempDir);
         }
 
-        const files = await readdir(tempDir);
+        const files = await readdir(skillDir);
         let contentStr = "";
         const mdFiles = files.filter(f => f.toLowerCase().endsWith(".md")).sort((a, b) => a.toLowerCase() === "skill.md" ? -1 : 1);
 
         if (mdFiles.length > 0) {
-          contentStr = await readFile(join(tempDir, mdFiles[0]), "utf-8");
+          contentStr = await readFile(join(skillDir, mdFiles[0]), "utf-8");
         } else {
           contentStr = "No .md documentation found in this skill.";
         }
@@ -297,16 +368,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }
         } catch { }
 
+        let skillDir;
         if (!isCached) {
-          const { stdout: searchOut } = await execFileAsync("skillnet", ["search", topic, "--limit", "1", "--sort-by", "stars"]);
-          const urlMatch = searchOut.match(/https:\/\/github\.com\/([^\s│]+)/);
-          if (!urlMatch) {
+          const skillUrl = await bestSkillUrl(topic);
+          if (!skillUrl) {
             return { content: [{ type: "text", text: `No skill found for topic: ${topic}.` }] };
           }
-          await execFileAsync("skillnet", ["download", urlMatch[0], "-d", tempDir]);
+          skillDir = await downloadSkill(skillUrl, tempDir);
+        } else {
+          skillDir = await resolveSkillDir(tempDir);
         }
 
-        const files = await readdir(tempDir);
+        const files = await readdir(skillDir);
         let rulesContent = "";
 
         // 1. PRIORITY FILES (Direct LLM Instructions)
@@ -318,7 +391,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (priorityFiles.length > 0 || generalRuleFiles.length > 0) {
           const targetFiles = [...priorityFiles, ...generalRuleFiles];
           for (const sf of targetFiles) {
-            const raw = await readFile(join(tempDir, sf), "utf-8");
+            const raw = await readFile(join(skillDir, sf), "utf-8");
             // Noise reduction: strip image tags and clean markdown links
             const cleanContent = raw.replace(/!\[.*\]\(.*\)/g, "").replace(/\[(.*?)\]\(.*?\)/g, "$1");
             rulesContent += `--- FROM FILE: ${sf} ---\n${cleanContent}\n\n`;
@@ -327,7 +400,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           // 3. REGEX DOMAIN EXTRACTION
           const mdFiles = files.filter(f => f.toLowerCase().endsWith(".md")).sort((a, b) => a.toLowerCase() === "skill.md" ? -1 : 1);
           if (mdFiles.length > 0) {
-            const fullMd = await readFile(join(tempDir, mdFiles[0]), "utf-8");
+            const fullMd = await readFile(join(skillDir, mdFiles[0]), "utf-8");
             const regex = /(?:#+\s*(?:Kurallar|Rules|Best Practices|Instructions|Talimatlar|Guidelines|Prerequisites|Requirements|Core Principles|Architecture|Setup|Usage|En İyi Pratikler|İlkeler|Kılavuz|Gereksinimler|Kullanım|Mimari|规则|最佳实践|指南|指令|核心原则|架构|要求|用法))([\s\S]*?)(?=\n#+ |\Z)/ig;
 
             let match;
@@ -359,7 +432,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     const commandArgs = buildCommand(name, args);
 
-    const { stdout, stderr } = await execFileAsync("skillnet", commandArgs);
+    const { stdout, stderr } = await runSkillnet(commandArgs, { token: name === "download_skill" ? args.token : undefined });
+
+    if (name === "search_skills" || name === "download_skill") {
+      const parsed = parseCliJson(stdout);
+      if (parsed) {
+        const text = name === "search_skills"
+          ? formatSearchResults(parsed.data)
+          : `Downloaded to ${parsed.data && parsed.data.path}`;
+        return { content: [{ type: "text", text }] };
+      }
+    }
 
     return {
       content: [
