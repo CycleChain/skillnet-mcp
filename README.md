@@ -1,6 +1,6 @@
 # SkillNet MCP Server
 
-[![Tests / CI](https://github.com/CycleChain/skillnet-mcp/actions/workflows/test.yml/badge.svg)](https://github.com/CycleChain/skillnet-mcp/actions/workflows/test.yml) [![Version](https://img.shields.io/github/package-json/v/CycleChain/skillnet-mcp)](https://github.com/CycleChain/skillnet-mcp) [![Docker Image Version](https://img.shields.io/docker/v/fmdogancan/skillnet-mcp?sort=semver)](https://hub.docker.com/r/fmdogancan/skillnet-mcp) [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Tests / CI](https://github.com/CycleChain/skillnet-mcp/actions/workflows/test.yml/badge.svg)](https://github.com/CycleChain/skillnet-mcp/actions/workflows/test.yml) [![Version](https://img.shields.io/github/package-json/v/CycleChain/skillnet-mcp)](https://github.com/CycleChain/skillnet-mcp) [![Docker Image Version](https://img.shields.io/docker/v/fmdogancan/skillnet-mcp?sort=semver)](https://hub.docker.com/r/fmdogancan/skillnet-mcp) [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org/) [![Listed on mcpservers.org](https://mcpservers.org/badge.svg)](https://mcpservers.org/servers/cyclechain/skillnet-mcp) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 - [🇹🇷 Türkçe (Turkish)](README_TR.md)
 - [🇨🇳 中文 (Chinese)](README_ZN.md)
 - [📝 Changelog](CHANGELOG.md)
