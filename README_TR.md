@@ -41,6 +41,8 @@ Bu MCP sunucusunu geliştirme araçlarınızda etkinleştirmek için sisteminizd
 
 Bu anahtarlar şu işe yarar:
 * **`API_KEY`**: Altyapıdaki `skillnet-ai` paketinin logları okumak, yetenekleri özetlemek veya güvenlik için AI modellerini (örn. OpenAI) kullanmak istediğinde LLM sunucularıyla iletişim kurmasını sağlar.
+* **`BASE_URL`** *(İsteğe Bağlı)*: Özel OpenAI uyumlu API base adresi (örn. `https://api.openai.com/v1`).
+* **`SKILLNET_MODEL`** *(İsteğe Bağlı)*: Yetenek oluşturma, değerlendirme ve analizde kullanılacak varsayılan model (örn. `gpt-4o`).
 * **`GITHUB_TOKEN`**: Genel depolar için tamamen zorunlu olmasa da, bir Github Token sunmak `create_skill` aracı Github projelerinden yetenek oluştururken klonlama işlemlerini inanılmaz hızlandırır ve GitHub API sınır hatalarıyla ("Rate Limit") karşılaşmanızı engeller.
 
 ### 1. Claude Desktop
@@ -210,13 +212,17 @@ Bu MCP sunucusu yapay zeka ajanları (Cursor, Windsurf, Claude Desktop vb.) tara
 
 Yapılandırmayı tamamladıktan sonra ajanınız MCP protokolü ile aşağıdaki araçları kullanmaya başlayabilir:
 - **`health_check`**: Kendi kendini teşhis aracı. Sistemde Python, Node ve SkillNet CLI'ın kurulu olup olmadığını kontrol eder. Hata durumunda ajanlar bunu otomatik çalıştırır.
+- **`doctor`**: SkillNet CLI üzerinden ortam bağımlılıklarını, ağ bağlantısını ve LLM yapılandırmasını derinlemesine denetleyen teşhis aracı.
 - **`import_best_skill`**: Belirli bir konu (geliştirme dilleri, teknolojiler vb.) için en yüksek yıldızlı skillnet yeteneğini anlık olarak arar, indirir ve en iyi pratikleri ajanınızın hafızasına hemen yükler.
 - **`get_skill_rules`**: LLM token dostu hafif bir yetenek aracıdır. Tüm belgesini vermek yerine, sadece o yetenek paketindeki kritik kuralları (rules.json, kurallar bölümü vb.) getirerek ajanın bağlamında tasarruf sağlar.
-- **`search_skills`**: Anahtar kelime veya anlamsal eşleşmeyle 400.000'den fazla yeteneği arayın.
+- **`search_skills`**: Anahtar kelime veya anlamsal eşleşmeyle 600.000'den fazla yeteneği arayın.
 - **`download_skill`**: Uzaktaki yetenekleri cihazınıza doğrudan indirin. Yansıtma (`--mirror`) ve özel depo kimlik doğrulaması (`--token`) destekler.
+- **`validate_skill`**: Yerel yetenek klasör yapısını ve konfigürasyonunu model çağrısı yapmadan (token/maliyet harcamadan) çevrimdışı doğrulayan hızlı test aracı.
 - **`create_skill`**: Github depolarını, PDF'leri ya da istemleri (prompts) yerel yetenek paketlerine çevirin.
 - **`evaluate_skill`**: Herhangi bir yetenek hakkında 5 Boyutlu Değerlendirme raporu alın (Güvenlik, Bütünlük, vb.).
 - **`analyze_skills`**: Birden çok yetenek arasındaki bağımlılıkları analiz edip ilişkilerini haritalayın.
+
+> **Görsel Keşif (UI):** İndirilen yeteneklerinizi, ilişkilerini ve kaynak kanıtlarını yerel tarayıcınızda interaktif olarak incelemek için terminalinizde `skillnet ui` komutunu çalıştırabilirsiniz.
 
 ### Örnek Kullanım Komutları (Prompt Örnekleri)
 Ajanınıza verebileceğiniz bazı otonom komut örnekleri:

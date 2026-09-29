@@ -39,8 +39,9 @@ To enable this MCP server in your tools, you will need to edit their respective 
 
 **Note on API Keys (Optional):** The `search_skills` and `download_skill` tools **do not** require any API keys. However, if you intend to use the `create_skill`, `evaluate_skill`, or `analyze_skills` endpoints, you must provide your API keys in the `env` object as shown below. 
 
-Here is why they are needed:
 * **`API_KEY`**: Required by the underlying `skillnet-ai` package to communicate with LLM endpoints (like OpenAI) when using LLMs to trace logs, summarize skills, or evaluate capabilities.
+* **`BASE_URL`** *(Optional)*: Custom OpenAI-compatible API base URL (e.g. `https://api.openai.com/v1`).
+* **`SKILLNET_MODEL`** *(Optional)*: Model name to use for skill creation, evaluation, and analysis (e.g. `gpt-4o`).
 * **`GITHUB_TOKEN`**: While not strictly required for public repositories, providing a GitHub token greatly accelerates cloning and prevents rate-limit errors when parsing GitHub repositories during `create_skill`.
 
 ### 1. Claude Desktop
@@ -188,13 +189,17 @@ Since this MCP server is optimized to be used by AI Agents (like Cursor, Windsur
 
 Once configured, your agent gets access to the following underlying actions via the MCP protocol:
 - **`health_check`**: Self-diagnostic tool. Checks if Python, Node, and SkillNet CLI are properly installed. Agents will autonomously run this if tools fail.
+- **`doctor`**: Deep diagnostics checking environment dependencies, network connectivity, and LLM configuration via SkillNet CLI.
 - **`import_best_skill`**: Dynamically searches for the highest-rated skill on a given topic, downloads it, and immediately returns its entire documentation to your agent's context.
 - **`get_skill_rules`**: A token-friendly alternative to `import_best_skill`. Extracts only the core rules and system instructions (e.g., `rules.json` or `PROMPT.md`) without loading the full documentation.
-- **`search_skills`**: Search across 400,000+ skills by keywords or semantics.
+- **`search_skills`**: Search across 600,000+ skills by keywords or semantics.
 - **`download_skill`**: Install remote skill code directly to your local file system. Supports mirroring (`--mirror`), replacing an existing copy (`overwrite`) and private repo authentication (`token`, handed to the CLI as `GITHUB_TOKEN` rather than a command-line argument).
+- **`validate_skill`**: Fast, offline validator checking local skill directory structure and metadata without making model calls.
 - **`create_skill`**: Turn repos, PDFs, and prompts into structured skill packages locally.
 - **`evaluate_skill`**: Get a 5-D report (Safety, Completeness, etc.) of any skill.
 - **`analyze_skills`**: Trace dependencies and build semantic relationship maps over a group of skills (`output_dir`, `force`).
+
+> **Visual Explorer:** You can also visually explore your skills, relationship graphs, and source evidence in a local web interface by running `skillnet ui` in your terminal.
 
 ### Example Usage Prompts
 Here are some autonomous prompt examples you can give to your AI Agent:

@@ -63,6 +63,27 @@ describe('SkillNet MCP Command Builder', () => {
         expect(legacy).toEqual(['analyze', './skills']);
     });
 
+    it('should build validate_skill command', () => {
+        const cmd = buildCommand('validate_skill', { skill_dir: './skills/web_search' });
+        expect(cmd).toEqual(['validate', './skills/web_search']);
+
+        const cmdJson = buildCommand('validate_skill', { skill_dir: './skills/web_search', json: true });
+        expect(cmdJson).toEqual(['validate', './skills/web_search', '--json']);
+    });
+
+    it('should build doctor command', () => {
+        const cmd = buildCommand('doctor', {});
+        expect(cmd).toEqual(['doctor']);
+
+        const cmdAll = buildCommand('doctor', {
+            check_network: true,
+            check_llm: true,
+            check_explorer: true,
+            json: true
+        });
+        expect(cmdAll).toEqual(['doctor', '--check-network', '--check-llm', '--check-explorer', '--json']);
+    });
+
     // --- NEGATİF (NON-EXPECT) VE HATA BEKLENEN (EXPECT ERROR) TESTLER ---
 
     it('should throw on missing arguments for search_skills', () => {

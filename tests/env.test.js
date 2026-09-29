@@ -33,14 +33,25 @@ describe('MCP Server Environment Variables (Config)', () => {
         expect(process.env.GITHUB_TOKEN).toBeUndefined();
     });
 
+    it('should correctly receive BASE_URL and SKILLNET_MODEL from environment', () => {
+        process.env.BASE_URL = 'https://api.openai.com/v1';
+        process.env.SKILLNET_MODEL = 'gpt-4o';
+        expect(process.env.BASE_URL).toBe('https://api.openai.com/v1');
+        expect(process.env.SKILLNET_MODEL).toBe('gpt-4o');
+    });
+
     it('should correctly pass environment variables to child processes (mock test)', () => {
         process.env.API_KEY = 'test_api_key';
         process.env.GITHUB_TOKEN = 'ghp_test_token';
+        process.env.BASE_URL = 'https://api.openai.com/v1';
+        process.env.SKILLNET_MODEL = 'gpt-4o';
         
         // Simulating the environment passed to execFileAsync
         const simulatedExecEnv = { ...process.env };
         
         expect(simulatedExecEnv.API_KEY).toBe('test_api_key');
         expect(simulatedExecEnv.GITHUB_TOKEN).toBe('ghp_test_token');
+        expect(simulatedExecEnv.BASE_URL).toBe('https://api.openai.com/v1');
+        expect(simulatedExecEnv.SKILLNET_MODEL).toBe('gpt-4o');
     });
 });

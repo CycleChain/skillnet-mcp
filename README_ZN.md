@@ -41,6 +41,8 @@ npm install
 
 这些密钥的用途说明如下：
 * **`API_KEY`**: 它是下层 `skillnet-ai` 软件包不可或缺的一部分，用以在利用 LLM（如 OpenAI）概括日志、生成技能概述或评估工具安全质量时，正常地与模型服务端进行通信。
+* **`BASE_URL`** *(可选)*: 自定义 OpenAI 兼容 API 基础地址（如 `https://api.openai.com/v1`）。
+* **`SKILLNET_MODEL`** *(可选)*: 技能创建、评估与分析时调用的默认模型（如 `gpt-4o`）。
 * **`GITHUB_TOKEN`**: 对于公开的库来说其实并不是严格强制性的，但加入 GitHub Token 能够极大地加快仓库的克隆下载速度，并且全面地避免代理使用 `create_skill` 处理包含大量文件的项目时遇到的 GitHub API 速率限制（Rate Limit）错误。
 
 ### 1. Claude Desktop
@@ -210,13 +212,17 @@ docker build -t skillnet-mcp-local .
 
 配置完成后，您的智能体将可以通过 MCP 协议执行以下核心操作：
 - **`health_check`**: 系统自检工具。检查 Python、Node 和 SkillNet CLI 是否正确安装。遇到错误时智能体会自动运行此工具排查依赖。
+- **`doctor`**: 深度诊断工具。通过 SkillNet CLI 检查环境依赖、网络连接以及 LLM 接口配置。
 - **`import_best_skill`**: 动态搜索特定主题最高评分的技能，立即下载并将其全套文档载入到智能体的上下文中，实现技能的热更新与即插即用。
 - **`get_skill_rules`**: `import_best_skill` 的 Token 友好型替代方案。仅提取技能中的核心规则和系统指令（例如 `rules.json` 或重点规则部分），避免加载完整文档浪费 Token。
-- **`search_skills`**: 通过关键字或语义匹配在全球超 400,000 项技能库中进行搜索。
+- **`search_skills`**: 通过关键字或语义匹配在全球超 600,000 项技能库中进行搜索。
 - **`download_skill`**: 从远程地址直接安装技能到您的本地文件系统中。支持镜像 (`--mirror`) 和私有仓库认证 (`--token`)。
+- **`validate_skill`**: 本地离线校验工具。无需调用大模型（零 API 消耗）即可快速验证本地技能目录的结构和规范。
 - **`create_skill`**: 将 Github 仓库、PDF 文件，甚至自然语言指令，提炼成标准化结构的技能包。
 - **`evaluate_skill`**: 根据 安全性、完整性 等 5 个重点维度的质量对各项技能进行评分分析。
 - **`analyze_skills`**: 映射本地文件系统内技能间的连接与依赖关系，搭建技能关系语义网。
+
+> **可视化探索 (Visual Explorer):** 您还可以在终端中运行 `skillnet ui` 命令，在本地浏览器页面中直观探索已安装技能、关系图谱及证据来源。
 
 ### 提示词使用示例 (Prompt Examples)
 以下是您可以直接向您的 AI 智能体发出的一些自主指令示例：

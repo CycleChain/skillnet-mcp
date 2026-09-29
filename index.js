@@ -146,6 +146,31 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ["skills_dir"],
         },
+      },
+      {
+        name: "validate_skill",
+        description: "Checks a local skill's directory structure and configuration offline without making model calls.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            skill_dir: { type: "string", description: "Path to local skill directory to validate" },
+            json: { type: "boolean", description: "Output structured JSON response" },
+          },
+          required: ["skill_dir"],
+        },
+      },
+      {
+        name: "doctor",
+        description: "Runs diagnostic checks on the SkillNet environment, dependencies, network connectivity, and LLM configuration.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            check_network: { type: "boolean", description: "Validate network connectivity to search services and GitHub" },
+            check_llm: { type: "boolean", description: "Perform an LLM call to verify credentials and endpoint" },
+            check_explorer: { type: "boolean", description: "Verify Agent SDK exploration setup" },
+            json: { type: "boolean", description: "Output structured JSON response" },
+          },
+        },
       }
     ],
   };
@@ -269,6 +294,19 @@ export function buildCommand(name, args) {
       if (args.output_dir) commandArgs.push("--output-dir", args.output_dir);
       if (args.force) commandArgs.push("--force");
       if (args.model) commandArgs.push("--model", args.model);
+      break;
+
+    case "validate_skill":
+      commandArgs.push("validate", args.skill_dir);
+      if (args.json) commandArgs.push("--json");
+      break;
+
+    case "doctor":
+      commandArgs.push("doctor");
+      if (args.check_network) commandArgs.push("--check-network");
+      if (args.check_llm) commandArgs.push("--check-llm");
+      if (args.check_explorer) commandArgs.push("--check-explorer");
+      if (args.json) commandArgs.push("--json");
       break;
 
     default:
